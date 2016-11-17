@@ -54,13 +54,6 @@ public class PatriciaTrie {
     }
 
     public void ajouter(String mot) {
-        if (contientMotNonStricte(mot))
-            ajouterMotDejaPresant(mot);
-        else
-            ajouterNonPresant(mot);
-    }
-
-    private void ajouterNonPresant(String mot) {
         if (this.estVide())
             cle.put(mot, new PatriciaTrie());
         else {
@@ -70,38 +63,12 @@ public class PatriciaTrie {
                 lp = longueurPlusGrandPrefixeCommun(s, mot);
                 if (lp != 0) {
                     String prefixe = prefixe(s, mot);
-                    tmp = cle.get(s);
-                    System.out.println("tmp :" + tmp);
-                    cle.remove(s);
-                    System.out.println("fin  " + tmp.hasFinMot());
-                    System.out.println("vide " + tmp.estVide());
-                    cle.put(prefixe, tmp);
-                    cle.get(prefixe).ajouter(s.substring(lp));
-                    cle.get(prefixe).ajouterMotDejaPresant(mot.substring(lp));
-                    break;
-                }
-            }
-            if (lp == 0) {
-                cle.put(mot, new PatriciaTrie());
-            }
-        }
-    }
-
-    public void ajouterMotDejaPresant(String mot) {
-        if (this.estVide())
-            cle.put(mot, new PatriciaTrie());
-        else {
-            PatriciaTrie tmp;
-            int lp = 0;
-            for (String s : this.valeurRacine()) {
-                lp = longueurPlusGrandPrefixeCommun(s, mot);
-                if (lp != 0) {
-                    String prefixe = prefixe(s, mot);
-                    tmp = cle.get(s);
-                    System.out.println("tmp :" + tmp);
-                    cle.remove(s);
-                    cle.put(prefixe, new PatriciaTrie(s.substring(lp), tmp));
-                    cle.get(prefixe).ajouterMotDejaPresant(mot.substring(lp));
+                    if (!(lp == s.length())) {
+                        tmp = cle.get(s);
+                        cle.remove(s);
+                        cle.put(prefixe, new PatriciaTrie(s.substring(lp), tmp));
+                    }
+                    cle.get(prefixe).ajouter(mot.substring(lp));
                     break;
                 }
             }
@@ -142,7 +109,7 @@ public class PatriciaTrie {
 /*                System.out.println("mot "+mot);
                 System.out.println("smo "+s);
                 System.out.println("sub "+mot.substring(lp));*/
-                return cle.get(s).contientMot(mot.substring(lp));
+                return cle.get(s).contientMotNonStricte(mot.substring(lp));
             }
         }
         return false;
