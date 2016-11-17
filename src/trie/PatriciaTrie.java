@@ -3,7 +3,7 @@ package trie;
 import java.util.*;
 
 public class PatriciaTrie {
-    private Map<String, PatriciaTrie> cle;
+    private HashMap<String, PatriciaTrie> cle;
 
     public PatriciaTrie(String mot) {
         this.cle = new HashMap<String, PatriciaTrie>();
@@ -12,6 +12,12 @@ public class PatriciaTrie {
 
     public PatriciaTrie() {
         this.cle = new HashMap<String, PatriciaTrie>();
+
+    }
+
+    public PatriciaTrie(String mot, PatriciaTrie cle) {
+        this.cle = new HashMap<String, PatriciaTrie>();
+        this.cle.put(mot, cle);
     }
 
     public boolean estVide() {
@@ -42,25 +48,104 @@ public class PatriciaTrie {
         return len;
     }
 
-    public boolean ajouter(String mot) {
-        if (this.estVide()) {
-            this.cle.put(mot, new PatriciaTrie());
-            return true;
-        }
 
-        int longueurPrefixe = 0;
-        for (String a : cle.keySet()) {
-            longueurPrefixe = longueurPlusGrandPrefixeCommun(a, mot);
-            if (longueurPrefixe != 0) {
-                if (longueurPrefixe == mot.length())
-                    return false;
-                this.cle.get(a).ajouter(mot.substring(longueurPrefixe));
-                break;
+    private String prefixe(String a, String b) {
+        return a.substring(0, longueurPlusGrandPrefixeCommun(a, b));
+    }
+
+    public void ajouter(String mot) {
+        if (contientMotNonStricte(mot))
+            ajouterMotDejaPresant(mot);
+        else
+            ajouterNonPresant(mot);
+    }
+
+    private void ajouterNonPresant(String mot) {
+        if (this.estVide())
+            cle.put(mot, new PatriciaTrie());
+        else {
+            PatriciaTrie tmp;
+            int lp = 0;
+            for (String s : this.valeurRacine()) {
+                lp = longueurPlusGrandPrefixeCommun(s, mot);
+                if (lp != 0) {
+                    String prefixe = prefixe(s, mot);
+                    tmp = cle.get(s);
+                    System.out.println("tmp :" + tmp);
+                    cle.remove(s);
+                    System.out.println("fin  " + tmp.hasFinMot());
+                    System.out.println("vide " + tmp.estVide());
+                    cle.put(prefixe, tmp);
+                    cle.get(prefixe).ajouter(s.substring(lp));
+                    cle.get(prefixe).ajouterMotDejaPresant(mot.substring(lp));
+                    break;
+                }
+            }
+            if (lp == 0) {
+                cle.put(mot, new PatriciaTrie());
             }
         }
-        if (longueurPrefixe == 0)
-            this.cle.put(mot, new PatriciaTrie());
-        return true;
+    }
+
+    public void ajouterMotDejaPresant(String mot) {
+        if (this.estVide())
+            cle.put(mot, new PatriciaTrie());
+        else {
+            PatriciaTrie tmp;
+            int lp = 0;
+            for (String s : this.valeurRacine()) {
+                lp = longueurPlusGrandPrefixeCommun(s, mot);
+                if (lp != 0) {
+                    String prefixe = prefixe(s, mot);
+                    tmp = cle.get(s);
+                    System.out.println("tmp :" + tmp);
+                    cle.remove(s);
+                    cle.put(prefixe, new PatriciaTrie(s.substring(lp), tmp));
+                    cle.get(prefixe).ajouterMotDejaPresant(mot.substring(lp));
+                    break;
+                }
+            }
+            if (lp == 0) {
+                cle.put(mot, new PatriciaTrie());
+            }
+        }
+    }
+
+    private boolean hasFinMot() {
+        for (String s : valeurRacine()) {
+            if (s.isEmpty())
+                return true;
+        }
+        return false;
+    }
+
+    public boolean contientMot(String mot) {
+        if (mot.isEmpty() && (this.hasFinMot() || this.estVide()))
+            return true;
+        int lp = 0;
+        for (String s : this.valeurRacine()) {
+            lp = longueurPlusGrandPrefixeCommun(s, mot);
+            if (lp != 0 && lp == s.length()) {
+                return cle.get(s).contientMot(mot.substring(lp));
+            }
+        }
+        return false;
+    }
+
+    public boolean contientMotNonStricte(String mot) {
+        if (mot.isEmpty())
+            return true;
+        int lp = 0;
+        for (String s : this.valeurRacine()) {
+            lp = longueurPlusGrandPrefixeCommun(s, mot);
+            if (lp != 0) {
+/*                System.out.println("mot "+mot);
+                System.out.println("smo "+s);
+                System.out.println("sub "+mot.substring(lp));*/
+                return cle.get(s).contientMot(mot.substring(lp));
+            }
+        }
+        return false;
     }
 
     public boolean supprimer(String mot) {
@@ -74,7 +159,15 @@ public class PatriciaTrie {
             }
         }
 
-
         return true;
+    }
+
+    public boolean isLeaf() {
+        return this.cle.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return cle.toString();
     }
 }
