@@ -5,18 +5,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class PatriciaTrie {
+public class Patricia {
     private static String finMot = "є";
-    private HashMap<String, PatriciaTrie> cle;
-    private PatriciaTrie pere;
+    private HashMap<String, Patricia> cle;
+    private Patricia pere;
 
 
-    public PatriciaTrie() {
-        this.cle = new HashMap<String, PatriciaTrie>();
+    public Patricia() {
+        this.cle = new HashMap<String, Patricia>();
     }
 
-    private PatriciaTrie(String mot, PatriciaTrie cle) {
-        this.cle = new HashMap<String, PatriciaTrie>();
+    private Patricia(String mot, Patricia cle) {
+        this.cle = new HashMap<String, Patricia>();
         this.cle.put(mot, cle);
     }
 
@@ -44,7 +44,7 @@ public class PatriciaTrie {
         return values;
     }
 
-    public PatriciaTrie sousArbre(int i) {
+    public Patricia sousArbre(int i) {
         List<String> values = new ArrayList<String>(this.cle.keySet());
         Collections.sort(values);
         return this.cle.get(values.get(i));
@@ -53,12 +53,12 @@ public class PatriciaTrie {
     public void ajouter(String mot) {
         if (!mot.isEmpty()) {
             if (this.estVide()) {
-                PatriciaTrie pt = new PatriciaTrie();
+                Patricia pt = new Patricia();
                 cle.put(mot, pt);
-                pt.cle.put(finMot, new PatriciaTrie());
+                pt.cle.put(finMot, new Patricia());
                 pt.setPere(this);
             } else {
-                PatriciaTrie tmp;
+                Patricia tmp;
                 int lp = 0;
                 for (String s : this.cle.keySet()) {
                     lp = longueurPlusGrandPrefixeCommun(s, mot);
@@ -67,7 +67,7 @@ public class PatriciaTrie {
                         if (!(lp == s.length())) {
                             tmp = cle.get(s);
                             cle.remove(s);
-                            PatriciaTrie pt = new PatriciaTrie(s.substring(lp), tmp);
+                            Patricia pt = new Patricia(s.substring(lp), tmp);
                             cle.put(prefixe, pt);
                             pt.setPere(this);
                             tmp.setPere(pt);
@@ -75,14 +75,14 @@ public class PatriciaTrie {
                         if (!(lp == mot.length()))
                             cle.get(prefixe).ajouter(mot.substring(lp));
                         else
-                            cle.get(prefixe).cle.put(finMot, new PatriciaTrie());
+                            cle.get(prefixe).cle.put(finMot, new Patricia());
                         break;
                     }
                 }
                 if (lp == 0) {
-                    PatriciaTrie pt = new PatriciaTrie();
+                    Patricia pt = new Patricia();
                     cle.put(mot, pt);
-                    pt.cle.put(finMot, new PatriciaTrie());
+                    pt.cle.put(finMot, new Patricia());
                     pt.setPere(this);
                 }
             }
@@ -93,7 +93,7 @@ public class PatriciaTrie {
         if (mot.isEmpty() && (this.hasFinMot())) {
             cle.remove(finMot);
             String nom = null;
-            HashMap<String, PatriciaTrie> clePere = this.pere.cle;
+            HashMap<String, Patricia> clePere = this.pere.cle;
             for (String key : clePere.keySet())
                 if (clePere.get(key) == this)
                     nom = key;
@@ -102,8 +102,8 @@ public class PatriciaTrie {
                 clePere.remove(nom);
             }
             // si reste un frere seul fusion frere avec pere si il existe
-            if (clePere.size() == 1) {
-                PatriciaTrie grandPere = pere.pere;
+            if (clePere.size() > 0) {
+                Patricia grandPere = pere.pere;
                 //keySet().toArray()[0] existe puisque clePere.size()==1
                 String nomPere = (String) clePere.keySet().toArray()[0];
                 //fusion avec les fils
@@ -119,12 +119,14 @@ public class PatriciaTrie {
                         grandPere.cle.put(nomGrandpPere + nomPere, clePere.get(nomPere));
                     }
                 } else {
-                    String frere = (String) clePere.get(nomPere).cle.keySet().toArray()[0];
-                    PatriciaTrie saveFils = clePere.get(nomPere).cle.get(frere);
-                    saveFils.setPere(pere);
-                    clePere.get(nomPere).cle.remove(frere);
-                    clePere.remove(nomPere);
-                    clePere.put(nomPere + frere, saveFils);
+                    if (clePere.get(nomPere).cle.keySet().size() == 1) {
+                        String frere = (String) clePere.get(nomPere).cle.keySet().toArray()[0];
+                        Patricia saveFils = clePere.get(nomPere).cle.get(frere);
+                        saveFils.setPere(pere);
+                        clePere.get(nomPere).cle.remove(frere);
+                        clePere.remove(nomPere);
+                        clePere.put(nomPere + frere, saveFils);
+                    }
                 }
             }
             return true;
@@ -191,7 +193,7 @@ public class PatriciaTrie {
         int hMax = 0;
         if (this.cle.isEmpty())
             return 0;
-        for (PatriciaTrie pt : cle.values()) {
+        for (Patricia pt : cle.values()) {
             int hFils = pt.hauteur();
             if (hFils > hMax)
                 hMax = hFils;
@@ -229,15 +231,15 @@ public class PatriciaTrie {
         int nbMot = 0;
         if (cle.keySet().contains(finMot))
             nbMot++;
-        for (PatriciaTrie pt : cle.values())
+        for (Patricia pt : cle.values())
             nbMot += pt.comptageMots();
         return nbMot;
     }
 
     public double profondeurMoyenne() {
         int sommeProfondeur = 0;
-        ArrayList<PatriciaTrie> feuilles = getFeuilles();
-        for (PatriciaTrie pt : feuilles)
+        ArrayList<Patricia> feuilles = getFeuilles();
+        for (Patricia pt : feuilles)
             sommeProfondeur += pt.longueurDeLabranche();
         return sommeProfondeur / (double) feuilles.size();
     }
@@ -260,7 +262,7 @@ public class PatriciaTrie {
 
     private int longueurDeLabranche() {
         int lvl = 0;
-        PatriciaTrie pere = this.pere;
+        Patricia pere = this.pere;
         while (pere != null) {
             pere = pere.getPere();
             lvl++;
@@ -268,11 +270,11 @@ public class PatriciaTrie {
         return lvl;
     }
 
-    public PatriciaTrie getPere() {
+    public Patricia getPere() {
         return pere;
     }
 
-    private void setPere(PatriciaTrie pere) {
+    private void setPere(Patricia pere) {
         this.pere = pere;
     }
 
@@ -284,11 +286,11 @@ public class PatriciaTrie {
         return false;
     }
 
-    private ArrayList<PatriciaTrie> getFeuilles() {
-        ArrayList<PatriciaTrie> alpt = new ArrayList<PatriciaTrie>();
+    private ArrayList<Patricia> getFeuilles() {
+        ArrayList<Patricia> alpt = new ArrayList<Patricia>();
         if (cle.keySet().contains(finMot))
             alpt.add(this);
-        for (PatriciaTrie pt : cle.values())
+        for (Patricia pt : cle.values())
             alpt.addAll(pt.getFeuilles());
 
 

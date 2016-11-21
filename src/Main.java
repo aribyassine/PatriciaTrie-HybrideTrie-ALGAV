@@ -1,23 +1,62 @@
-import trie.PatriciaTrie;
+import trie.*;
 
 public class Main {
 
     public static void main(String[] args) {
-        String[] tab = {"a","ab","ac","ad","af","abc","abcd","abcde","abcdef"};
-        String[] tab2 = {"romane", "romanus", "romulus", "rubens", "ruber", "rubicon", "rubicundus", "rubic","a","ab","ac","ad","af","abc","abcd","abcde","abcdef"};
+
+
+        String[] tab = { "b", "ab" ,"bc","abc","bcd"};
+        String[] tab2 = { "romane", "romanus", "romulus", "rubens", "ruber", "rubicon", "rubicundus" };
         String exemple = "A quel genial professeur de dactylographie sommes nous redevables de la superbe phrase ci dessous, un modele du genre, que toute dactylo connait par coeur puisque elle fait appel a chacune des touches du clavier de la machine a ecrire ?";
         String[] tab3 = exemple.split(" ");
-        PatriciaTrie pt = new PatriciaTrie();
-        for (String s : tab) {
+        Hybride pt = new Hybride();
+        System.out.println(pt);
+        for (String s : tab2) {
             pt.ajouter(s);
         }
         System.out.println(pt);
-        for (int i = 0; i < tab.length; i++) {
-            int j = (int)(Math.random()*(double)tab.length);
-            System.out.println(pt.supprimer(tab[j]));
-            System.out.println(tab[j]);
-            System.out.println(pt);
+        System.out.println(pt.comptageMots());
+        System.out.println(pt.listeMots());
+        System.out.println(pt.comptageNil());
+        System.out.println(pt.ProfondeurMoyenne());
+        System.out.println(pt.prefixe("ro"));
+
+        System.out.println("apres suppression");
+        for (String s : tab2) {
+            pt.suppression(s);
         }
+        System.out.println(pt);
+        System.out.println(pt.comptageMots());
+        System.out.println(pt.listeMots());
+        System.out.println(pt.comptageNil());
+        System.out.println(pt.ProfondeurMoyenne());
+        System.out.println(pt.prefixe("ro"));
+//        for (String s : tab) {
+//            pt.ajouter(s);
+//        }
+//        System.out.println(pt.toString());
+//        System.out.println(pt.comptageMots());
+//        System.out.println(pt.listeMots());
+//        System.out.println(pt.comptageNil());
+//        System.out.println(pt.ProfondeurMoyenne());
+//        System.out.println(pt.prefixe("ab"));
+
+
+//        String[] tab = {"a","ab","ac","ad","af","abc","abcd","abcde","abcdef"};
+//        String[] tab2 = {"romane", "romanus", "romulus", "rubens", "ruber", "rubicon", "rubicundus", "rubic","a","ab","ac","ad","af","abc","abcd","abcde","abcdef"};
+//        String exemple = "A quel genial professeur de dactylographie sommes nous redevables de la superbe phrase ci dessous, un modele du genre, que toute dactylo connait par coeur puisque elle fait appel a chacune des touches du clavier de la machine a ecrire ?";
+//        String[] tab3 = exemple.split(" ");
+//        Patricia pt = new Patricia();
+//        for (String s : tab) {
+//            pt.ajouter(s);
+//        }
+//        System.out.println(pt);
+//        for (int i = 0; i < tab.length; i++) {
+//            int j = (int)(Math.random()*(double)tab.length);
+//            System.out.println(pt.supprimer(tab[j]));
+//            System.out.println(tab[j]);
+//            System.out.println(pt);
+//        }
 
 
 
