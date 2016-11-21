@@ -238,26 +238,21 @@ public class Hybride {
             if (mot.charAt(0) == this.valeur && this.position != 0) {
                 this.position = 0;
                 if (isLeaf()) {
-                    this.nettoyerArbre();
+                    this.couperLesBranchesInutiles();
                 }
                 return true;
             }
-            if (inf != null)
-                if (mot.charAt(0) == inf.valeur && inf.position != 0) {
-                    inf.position = 0;
-                    if (isLeaf()) {
-                        this.nettoyerArbre();
+            Hybride[] fils = {inf,sup};
+            for (Hybride h : fils) {
+                if (h != null)
+                    if (mot.charAt(0) == h.valeur && h.position != 0) {
+                        h.position = 0;
+                        if (isLeaf()) {
+                            this.couperLesBranchesInutiles();
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            if (sup != null)
-                if (mot.charAt(0) == sup.valeur && sup.position != 0) {
-                    sup.position = 0;
-                    if (isLeaf()) {
-                        this.nettoyerArbre();
-                    }
-                    return true;
-                }
+            }
             return false;
         } else {
             char p = mot.charAt(0);
@@ -294,15 +289,11 @@ public class Hybride {
         return videEq && videInf && videSup;
     }
 
-    public List<Hybride> getSousArbres() {
-        List<Hybride> sousArbres = new ArrayList<Hybride>();
-        sousArbres.add(inf);
-        sousArbres.add(eq);
-        sousArbres.add(sup);
-        return sousArbres;
+    public Hybride[] getSousArbres() {
+        return new Hybride[]{inf, eq, sup};
     }
 
-    private boolean nettoyerArbre() {
+    private boolean couperLesBranchesInutiles() {
         Hybride pere = this.pere;
         Hybride self = this;
         while (pere != null && pere.comptageMots() == 0) {
@@ -310,13 +301,15 @@ public class Hybride {
             pere = pere.pere;
         }
         if (pere == null) {
-            self.position=0;
-            self.valeur=motVide;
+            //on est a la racine donc on reinitialise l'arbre
+            self.position = 0;
+            self.valeur = motVide;
             self.inf = null;
             self.eq = null;
             self.inf = null;
             return true;
         } else if (self.position == 0) {
+            //on coupe la branche inutile
             self.supprimerDansPere();
             return true;
         }
@@ -326,9 +319,9 @@ public class Hybride {
     private boolean supprimerDansPere() {
         if (pere == null)
             return false;
-        List<Hybride> sousArbresPere = pere.getSousArbres();
-        for (int i = 0; i < sousArbresPere.size(); i++) {
-            if (sousArbresPere.get(i) == this) {
+        Hybride[] sousArbresPere = pere.getSousArbres();
+        for (int i = 0; i < sousArbresPere.length; i++) {
+            if (sousArbresPere[i] == this) {
                 switch (i) {
                     case 0:
                         pere.inf = null;
@@ -354,7 +347,8 @@ public class Hybride {
             sb.append("|\t");
         }
         sb.append("|-->" + valeur + (position != 0 ? "-" + position : "") + "\n");
-        for (Hybride h : getSousArbres()) {
+        Hybride[] fils = getSousArbres();
+        for (Hybride h : fils) {
             if (h == null) {
                 for (int i = 0; i < lb + 1; i++) {
                     sb.append("|\t");

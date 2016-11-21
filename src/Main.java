@@ -5,13 +5,13 @@ public class Main {
     public static void main(String[] args) {
 
 
-        String[] tab = { "b", "ab" ,"bc","abc","bcd"};
-        String[] tab2 = { "romane", "romanus", "romulus", "rubens", "ruber", "rubicon", "rubicundus" };
+        String[] tab = {"b", "ab", "bc", "abc", "bcd"};
+        String[] tab2 = {"romane", "romanus", "romulus", "rubens", "ruber", "rubicon", "rubicundus"};
         String exemple = "A quel genial professeur de dactylographie sommes nous redevables de la superbe phrase ci dessous, un modele du genre, que toute dactylo connait par coeur puisque elle fait appel a chacune des touches du clavier de la machine a ecrire ?";
         String[] tab3 = exemple.split(" ");
         Hybride pt = new Hybride();
         System.out.println(pt);
-        for (String s : tab2) {
+        for (String s : tab) {
             pt.ajouter(s);
         }
         System.out.println(pt);
@@ -22,10 +22,12 @@ public class Main {
         System.out.println(pt.prefixe("ro"));
 
         System.out.println("apres suppression");
-        for (String s : tab2) {
-            pt.suppression(s);
+        String[] tab4 = {"bcd","bc","b", "ab", "bc", "abc","ab"};
+        for (String s : tab4) {
+            System.out.println(pt.suppression(s));
+            System.out.println(s);
+            System.out.println(pt);
         }
-        System.out.println(pt);
         System.out.println(pt.comptageMots());
         System.out.println(pt.listeMots());
         System.out.println(pt.comptageNil());
@@ -57,8 +59,6 @@ public class Main {
 //            System.out.println(tab[j]);
 //            System.out.println(pt);
 //        }
-
-
 
 
 //        String t = "r";
