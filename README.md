@@ -1,2 +1,2 @@
-## projet-ALGAV
-  Le but du problème consiste à représenter un dictionnaire de mots. Dans cette optique, nous proposonsl’implémentationdedeuxstructuresdetriesconcurrentespuisuneétudeexpérimentalepermettant de mettre en avant les avantages et inconvénients de chacun des modèles. En plus des implantations des structures de données et des primitives de base, nous envisageons une fonction avancée pour chacun des modèles. 
+﻿## projet-ALGAV
+Le but du problème consiste à représenter un dictionnaire de mots. Dans cette optique, nous proposons l’implémentation de deux structures de tries concurrentes puis une étude expérimentale permettant de mettre en avant les avantages et inconvénients de chacun des modèles. En plus des implantations des structures de données et des primitives de base, nous envisageons une fonction avancée pour chacun des modèles. 
