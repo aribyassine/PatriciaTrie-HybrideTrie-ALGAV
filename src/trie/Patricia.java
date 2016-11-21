@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Patricia {
-    private static String finMot = "є";
+    private static String finMot = "∅";
     private HashMap<String, Patricia> cle;
     private Patricia pere;
 
@@ -304,7 +304,7 @@ public class Patricia {
             for (int i = 0; i < this.longueurDeLabranche(); i++) {
                 sb.append("|\t");
             }
-            sb.append("|-->" + s + "\n").append(this.cle.get(s).toString());
+            sb.append(s + "\n").append(this.cle.get(s).toString());
         }
         return sb.toString();
         //return this.cle.toString();

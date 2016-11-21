@@ -242,7 +242,7 @@ public class Hybride {
                 }
                 return true;
             }
-            Hybride[] fils = {inf,sup};
+            Hybride[] fils = {inf, sup};
             for (Hybride h : fils) {
                 if (h != null)
                     if (mot.charAt(0) == h.valeur && h.position != 0) {
@@ -346,14 +346,14 @@ public class Hybride {
         for (int i = 0; i < lb; i++) {
             sb.append("|\t");
         }
-        sb.append("|-->" + valeur + (position != 0 ? "-" + position : "") + "\n");
+        sb.append(valeur + (position != 0 ? "," + position : "  ") + "\n");
         Hybride[] fils = getSousArbres();
         for (Hybride h : fils) {
             if (h == null) {
                 for (int i = 0; i < lb + 1; i++) {
                     sb.append("|\t");
                 }
-                sb.append("|-->∅\n");
+                sb.append("∅\n");
             } else
                 sb.append(h.toString());
         }
