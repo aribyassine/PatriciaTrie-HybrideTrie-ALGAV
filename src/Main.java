@@ -1,5 +1,8 @@
 import trie.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -16,31 +19,35 @@ public class Main {
 //            System.out.println(pt);
 //        }
 
-        String[] tab = {"a","ab","ac","ad","af","abc","abcd","abcde","abcdef"};
-        String[] tab2 = {"romane", "romanus", "romulus", "rubens", "ruber", "rubicon", "rubicundus", "rubic","a","ab","ac","ad","af","abc","abcd","abcde","abcdef"};
         String exemple = "A quel genial professeur de dactylographie sommes nous redevables de la superbe phrase ci dessous, un modele du genre, que toute dactylo connait par coeur puisque elle fait appel a chacune des touches du clavier de la machine a ecrire ?";
-        String[] tab3 = exemple.split(" ");
+        String[] tab0 = {"a", "ab", "ac", "ad", "af", "abc", "abcd", "abcde", "abcdef"};
+        String[] tab1 = {"romane", "romanus", "romulus", "rubens", "ruber", "rubicon", "rubicundus", "rubic", "rom"};
+        String[] tab2 = exemple.split(" ");
+        ArrayList<String> list = new ArrayList<String>();
+        for (String s : tab0)
+            list.add(s);
+
         Patricia pt = new Patricia();
-        for (String s : tab2) {
+        for (String s : list) {
             pt.ajouter(s);
         }
-        System.out.println(pt);
-        for (int i = 0; i < tab2.length; i++) {
-            int j = (int)(Math.random()*(double)tab.length);
-            System.out.println(pt.supprimer(tab[j]));
-            System.out.println(tab[j]);
+        //Collections.shuffle(list);
+        String[] tab3 = {"abcde","abc","abcd","ad","a","ab","ac","abcdef","af"};
+        for (String s : tab3) {
+            System.out.println("______________________________________\n" + s + "\n" + pt.listeMots());
+            pt.supprimer(s);
             System.out.println(pt);
         }
 
 
-        String t = "r";
-        System.out.println(pt.prefixe(t));
-        System.out.println(pt.listeSuffixe(t));
-        System.out.println(pt.ayantLePrefixe(t));
-
-
-        System.out.println(pt.recherche("romulus"));
-        System.out.println(pt.recherche("romu"));
-        System.out.println(pt.recherche("romuluss"));
+//        String t = "r";
+//        System.out.println(pt.prefixe(t));
+//        System.out.println(pt.listeSuffixe(t));
+//        System.out.println(pt.ayantLePrefixe(t));
+//
+//
+//        System.out.println(pt.recherche("romulus"));
+//        System.out.println(pt.recherche("romu"));
+//        System.out.println(pt.recherche("romuluss"));
     }
 }

@@ -15,6 +15,11 @@ public class Patricia {
         this.cle = new HashMap<String, Patricia>();
     }
 
+    private Patricia(Patricia pere) {
+        this.pere = pere;
+        this.cle = new HashMap<String, Patricia>();
+    }
+
     private Patricia(String mot, Patricia cle) {
         this.cle = new HashMap<String, Patricia>();
         this.cle.put(mot, cle);
@@ -89,53 +94,55 @@ public class Patricia {
         }
     }
 
+    private String maCleDansPere() {
+        for (String key : pere.cle.keySet())
+            if (pere.cle.get(key) == this)
+                return key;
+        return null;
+    }
+
     public boolean supprimer(String mot) {
         if (mot.isEmpty() && (this.hasFinMot())) {
             cle.remove(finMot);
-            String nom = null;
-            HashMap<String, Patricia> clePere = this.pere.cle;
-            for (String key : clePere.keySet())
-                if (clePere.get(key) == this)
-                    nom = key;
-            //supprimer dans le pere si il existe et si cle vide
-            if (cle.isEmpty() && this.getPere() != null) {
-                clePere.remove(nom);
-            }
-            // si reste un frere seul fusion frere avec pere si il existe
-            if (clePere.size() > 0) {
-                Patricia grandPere = pere.pere;
-                //keySet().toArray()[0] existe puisque clePere.size()==1
-                String nomPere = (String) clePere.keySet().toArray()[0];
-                //fusion avec les fils
-                if (grandPere != null) {
-                    String nomGrandpPere = null;
-                    for (String key : grandPere.cle.keySet())
-                        if (grandPere.cle.get(key) == pere)
-                            nomGrandpPere = key;
-                    pere.cle.get(nomPere).setPere(grandPere);
-                    if (!nomPere.equals(finMot)) {
-                        grandPere.cle.remove(nomPere);
-                        grandPere.cle.remove(nomGrandpPere);
-                        grandPere.cle.put(nomGrandpPere + nomPere, clePere.get(nomPere));
-                    }
-                } else {
-                    if (clePere.get(nomPere).cle.keySet().size() == 1) {
-                        String frere = (String) clePere.get(nomPere).cle.keySet().toArray()[0];
-                        Patricia saveFils = clePere.get(nomPere).cle.get(frere);
-                        saveFils.setPere(pere);
-                        clePere.get(nomPere).cle.remove(frere);
-                        clePere.remove(nomPere);
-                        clePere.put(nomPere + frere, saveFils);
-                    }
-                }
-            }
             return true;
         }
-        for (String s : this.cle.keySet()) {
+
+        for (String s : this.valeursRacine()) {
             int lp = longueurPlusGrandPrefixeCommun(s, mot);
-            if (lp != 0 && lp == s.length()) {
-                return cle.get(s).supprimer(mot.substring(lp));
-            }
+            if (lp != 0 && lp == s.length())
+                if (cle.get(s).supprimer(mot.substring(lp)))
+                    for (String key : valeursRacine())
+                        if (cle.get(key).cle.size() <= 1 && key != finMot) {
+                            if (cle.get(key).estVide())
+                                cle.remove(key);
+                            System.out.println(">>> "+cle.keySet());
+                            System.out.println(">>> "+key);
+                            if (pere != null) {
+                                //fusion avec le pere si il existe et si j'ai un seul fils et qu'il est != de finMot
+                                if (!cle.containsKey(finMot)) {
+                                    String cleDansPere = maCleDansPere();
+                                    pere.cle.remove(cleDansPere);
+                                    System.out.println(">>>fusion avec pere "+key);
+                                    pere.cle.put(cleDansPere + key, cle.get(key) != null ? cle.get(key)  : new Patricia());
+                                    cle.get(key).pere = pere;
+                                    return false;
+                                    //fusion avec fils Unique
+                                } else if (cle.size() == 2 && cle.containsKey(finMot)) {
+                                    System.out.println(">>>fusion avec fils "+key);
+                                    String cleFilsUnique = null;
+                                    for (String cleFils : cle.get(key).valeursRacine())
+                                        if (!cleFils.equals(finMot))
+                                            cleFilsUnique = cleFils;
+                                    Patricia fils = cle.get(key).cle.get(cleFilsUnique);
+                                    cle.remove(key);
+                                    if (fils != null) {
+                                        cle.put(key + cleFilsUnique, fils);
+                                        fils.pere = this;
+                                    }
+                                    return false;
+                                }
+                            }
+                        }
         }
         return false;
     }
