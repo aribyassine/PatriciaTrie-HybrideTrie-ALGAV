@@ -106,43 +106,24 @@ public class Patricia {
             cle.remove(finMot);
             return true;
         }
-
         for (String s : this.valeursRacine()) {
             int lp = longueurPlusGrandPrefixeCommun(s, mot);
             if (lp != 0 && lp == s.length())
-                if (cle.get(s).supprimer(mot.substring(lp)))
-                    for (String key : valeursRacine())
-                        if (cle.get(key).cle.size() <= 1 && key != finMot) {
-                            if (cle.get(key).estVide())
-                                cle.remove(key);
-                            System.out.println(">>> "+cle.keySet());
-                            System.out.println(">>> "+key);
-                            if (pere != null) {
-                                //fusion avec le pere si il existe et si j'ai un seul fils et qu'il est != de finMot
-                                if (!cle.containsKey(finMot)) {
-                                    String cleDansPere = maCleDansPere();
-                                    pere.cle.remove(cleDansPere);
-                                    System.out.println(">>>fusion avec pere "+key);
-                                    pere.cle.put(cleDansPere + key, cle.get(key) != null ? cle.get(key)  : new Patricia());
-                                    cle.get(key).pere = pere;
-                                    return false;
-                                    //fusion avec fils Unique
-                                } else if (cle.size() == 2 && cle.containsKey(finMot)) {
-                                    System.out.println(">>>fusion avec fils "+key);
-                                    String cleFilsUnique = null;
-                                    for (String cleFils : cle.get(key).valeursRacine())
-                                        if (!cleFils.equals(finMot))
-                                            cleFilsUnique = cleFils;
-                                    Patricia fils = cle.get(key).cle.get(cleFilsUnique);
-                                    cle.remove(key);
-                                    if (fils != null) {
-                                        cle.put(key + cleFilsUnique, fils);
-                                        fils.pere = this;
-                                    }
-                                    return false;
-                                }
-                            }
-                        }
+                if (cle.get(s).supprimer(mot.substring(lp))) {
+                    Patricia sousArbre = cle.get(s);
+                    if (sousArbre.cle.size()==0) {
+                        cle.remove(s);
+                        return true;
+                    }
+                    String cleFils= (String) sousArbre.cle.keySet().toArray()[0];
+                    if (sousArbre.cle.size()==1 && cleFils != finMot){
+                        cle.remove(s);
+                        cle.put(s+cleFils,sousArbre.cle.get(cleFils));
+                        sousArbre.cle.get(cleFils).pere = this;
+                        return true;
+                    }
+                    return false;
+                }
         }
         return false;
     }
@@ -249,22 +230,6 @@ public class Patricia {
         for (Patricia pt : feuilles)
             sommeProfondeur += pt.longueurDeLabranche();
         return sommeProfondeur / (double) feuilles.size();
-    }
-
-    public boolean contientMotNonStricte(String mot) {
-        if (mot.isEmpty())
-            return true;
-        int lp = 0;
-        for (String s : this.cle.keySet()) {
-            lp = longueurPlusGrandPrefixeCommun(s, mot);
-            if (lp != 0) {
-/*                System.out.println("mot "+mot);
-                System.out.println("smo "+s);
-                System.out.println("sub "+mot.substring(lp));*/
-                return cle.get(s).contientMotNonStricte(mot.substring(lp));
-            }
-        }
-        return false;
     }
 
     private int longueurDeLabranche() {

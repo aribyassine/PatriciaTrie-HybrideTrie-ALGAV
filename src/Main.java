@@ -24,18 +24,22 @@ public class Main {
         String[] tab1 = {"romane", "romanus", "romulus", "rubens", "ruber", "rubicon", "rubicundus", "rubic", "rom"};
         String[] tab2 = exemple.split(" ");
         ArrayList<String> list = new ArrayList<String>();
-        for (String s : tab0)
+        for (String s : tab2)
             list.add(s);
+        for (String s : list)
+            System.out.println(s);
 
         Patricia pt = new Patricia();
         for (String s : list) {
             pt.ajouter(s);
         }
-        //Collections.shuffle(list);
+
         String[] tab3 = {"abcde","abc","abcd","ad","a","ab","ac","abcdef","af"};
-        for (String s : tab3) {
-            System.out.println("______________________________________\n" + s + "\n" + pt.listeMots());
+
+        Collections.shuffle(list);
+        for (String s : list) {
             pt.supprimer(s);
+            System.out.println("______________________________________\n" + s + "\n" + pt.listeMots());
             System.out.println(pt);
         }
 
