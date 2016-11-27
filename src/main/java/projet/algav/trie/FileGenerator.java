@@ -9,7 +9,7 @@ public class FileGenerator {
         writer.close();
     }
 
-    public static boolean generate(Trie trie, String directory, String fileName) {
+    public static boolean generateHtmlFile(Trie trie, String directory, String fileName) {
         String path = directory + fileName;
         try {
             writer(path + "_Collapsible.json", trie.toCollapsibleJSON().toString());
@@ -29,7 +29,7 @@ public class FileGenerator {
                 "  <head>\n" +
                 "    <meta charset=\"utf-8\">\n" +
                 "\n" +
-                "    <title>Collapsible Tree Example</title>\n" +
+                "    <title>Not Collapsible "+trie.getClass().getSimpleName()+" Trie</title>\n" +
                 "\n" +
                 "    <style>\n" +
                 "\n" +
@@ -66,7 +66,7 @@ public class FileGenerator {
                 "Nombre de pointeurs vers NIL : " + trie.comptageNil() + "<span/>" +
                 "Profondeur moyenne des feuilles : " + trie.profondeurMoyenne() + "<span/>" +
                 "<br/>" +
-                "ListeMots : " + trie.listeMots() + "<br/>" +
+                "Liste des mots : " + trie.listeMots() + "<br/>" +
                 "<!-- load the d3.js library --> \n" +
                 "<script src=\"http://d3js.org/d3.v3.min.js\"></script>\n" +
                 "  \n" +
@@ -150,6 +150,9 @@ public class FileGenerator {
         return
                 "<!DOCTYPE html>\n" +
                         "<meta charset=\"utf-8\">\n" +
+                        "\n" +
+                        "    <title>Collapsible "+trie.getClass().getSimpleName()+" Trie</title>\n" +
+                        "\n" +
                         "<style>\n" +
                         "\n" +
                         "body{\n" +
@@ -188,7 +191,7 @@ public class FileGenerator {
                         "Nombre de pointeurs vers NIL : " + trie.comptageNil() + "<span/>" +
                         "Profondeur moyenne des feuilles : " + trie.profondeurMoyenne() + "<span/>" +
                         "<br/>" +
-                        "ListeMots : " + trie.listeMots() + "<br/>" +
+                        "Liste des mots : " + trie.listeMots() + "<br/>" +
 
                         "<script src=\"http://d3js.org/d3.v3.min.js\"></script>\n" +
                         "<script>\n" +

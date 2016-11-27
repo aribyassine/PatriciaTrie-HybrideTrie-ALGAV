@@ -1,7 +1,6 @@
 package projet.algav.trie;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Hello world!
@@ -20,12 +19,12 @@ public class App {
         for (String s : list) {
             trie.ajouter(s);
         }
-        FileGenerator.generate(trie,"3d.js\\","Patricia");
+        FileGenerator.generateHtmlFile(trie,"3d.js\\","Patricia");
         trie = new Hybride();
         for (String s : list) {
             trie.ajouter(s);
         }
-        FileGenerator.generate(trie,"3d.js\\","Hybride");
+        FileGenerator.generateHtmlFile(trie,"3d.js\\","Hybride");
 
         //System.out.println(gson.toJson(pt));
 //        Collections.shuffle(list);

@@ -1,7 +1,7 @@
 package projet.algav.trie;
 
+
 import com.google.gson.*;
-import com.google.gson.annotations.Expose;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -12,8 +12,7 @@ import java.util.List;
 public class Patricia implements Trie {
     private final static String finMot = "∅";
     private HashMap<String, Patricia> cle;
-    @Expose(serialize = false, deserialize = false)
-    transient private Patricia pere;
+    private Patricia pere;
 
 
     public Patricia() {
