@@ -1,12 +1,13 @@
-package trie;
+package projet.algav.trie;
 
+import com.google.gson.*;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
-
-import java.util.ArrayList;
-
-public class Hybride {
-    private static char motVide = '∅';
+public class Hybride implements Trie {
+    private static final char motVide = '∅';
     private static int cpt = 0;
     private int position = 0;
     private Hybride inf, sup, eq;
@@ -17,11 +18,12 @@ public class Hybride {
         valeur = motVide;
     }
 
-    public Hybride(Hybride pere) {
+    private Hybride(Hybride pere) {
         valeur = motVide;
         this.pere = pere;
     }
 
+    @Override
     public void ajouter(String mot) {
         if (mot.length() == 0)
             return;
@@ -57,11 +59,13 @@ public class Hybride {
         }
     }
 
+    @Override
     public boolean estVide() {
         return valeur == motVide;
     }
 
-    public boolean rechercher(String mot) {
+    @Override
+    public boolean recherche(String mot) {
         if (mot.isEmpty() || this.estVide())
             return false;
         if (mot.length() == 1) {
@@ -77,25 +81,20 @@ public class Hybride {
         } else {
             char p = mot.charAt(0);
             if (p == valeur) {
-                if (eq == null)
-                    return false;
-                return eq.rechercher(mot.substring(1));
+                return eq != null && eq.recherche(mot.substring(1));
             }
             if (p < valeur) {
-                if (inf == null)
-                    return false;
-                return inf.rechercher(mot);
+                return inf != null && inf.recherche(mot);
             }
             if (p > valeur) {
-                if (sup == null)
-                    return false;
-                return sup.rechercher(mot);
+                return sup != null && sup.recherche(mot);
             }
 
         }
         return false;
     }
 
+    @Override
     public int comptageMots() {
         int nbMots = 0;
         if (this.position != 0)
@@ -109,6 +108,70 @@ public class Hybride {
         return nbMots;
     }
 
+    @Override
+    public JsonElement toNoCollapsibleJSON() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        JsonSerializer<Hybride> serializer = new JsonSerializer<Hybride>() {
+            @Override
+            public JsonElement serialize(Hybride hybride, Type type, JsonSerializationContext jsonSerializationContext) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("name", valeur + (position != 0 ? "," + position : "  "));
+                if (pere != null) {
+                    jsonObject.addProperty("parent", pere.valeur + (pere.position != 0 ? "," + pere.position : "  "));
+                } else {
+                    jsonObject.addProperty("parent", "null");
+                }
+                JsonArray children = new JsonArray();
+                for (Hybride h : hybride.getSousArbres())
+                    if (h != null && h.valeur != motVide)
+                        children.add(h.toNoCollapsibleJSON());
+                    else {
+                        JsonObject tmp = new JsonObject();
+                        tmp.addProperty("name", motVide);
+                        children.add(tmp);
+                    }
+                jsonObject.add("children", children);
+                if (pere == null) {
+                    JsonArray tmp = new JsonArray();
+                    tmp.add(jsonObject);
+                    return tmp;
+                }
+                else {
+                    return jsonObject;
+                }
+            }
+        };
+        gsonBuilder.registerTypeAdapter(Hybride.class, serializer);
+        Gson customGson = gsonBuilder.create();
+        return customGson.toJsonTree(this);
+    }
+
+    @Override
+    public JsonElement toCollapsibleJSON() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        JsonSerializer<Hybride> serializer = new JsonSerializer<Hybride>() {
+            @Override
+            public JsonElement serialize(Hybride hybride, Type type, JsonSerializationContext jsonSerializationContext) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("name", valeur + (position != 0 ? "," + position : "  "));
+                JsonArray children = new JsonArray();
+                for (Hybride h : hybride.getSousArbres())
+                    if (h != null && h.valeur != motVide)
+                        children.add(h.toCollapsibleJSON());
+                    else {
+                        JsonObject tmp = new JsonObject();
+                        tmp.addProperty("name", motVide);
+                        children.add(tmp);
+                    }
+                jsonObject.add("children", children);
+                return jsonObject;
+            }
+        };
+        gsonBuilder.registerTypeAdapter(Hybride.class, serializer);
+        Gson customGson = gsonBuilder.create();
+        return customGson.toJsonTree(this);
+    }
+
     private int longueurDeLabranche() {
         int lvl = 0;
         Hybride pere = this.pere;
@@ -120,15 +183,16 @@ public class Hybride {
     }
 
     private List<String> ajouterPrefixe(String mot, List<String> list) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (String suffixe : list) {
             res.add(mot + suffixe);
         }
         return res;
     }
 
+    @Override
     public List<String> listeMots() {
-        List<String> mots = new ArrayList<String>();
+        List<String> mots = new ArrayList<>();
         String val = String.valueOf(valeur);
         if (position != 0)
             mots.add(val);
@@ -141,6 +205,7 @@ public class Hybride {
         return mots;
     }
 
+    @Override
     public int comptageNil() {
         int nbNils = 0;
         if (eq != null)
@@ -158,6 +223,7 @@ public class Hybride {
         return nbNils;
     }
 
+    @Override
     public int hauteur() {
         int infH = 0, supH = 0, eqH = 0;
         if (this.estVide())
@@ -174,7 +240,7 @@ public class Hybride {
     }
 
     private List<Hybride> getFeuilles() {
-        List<Hybride> feuilles = new ArrayList<Hybride>();
+        List<Hybride> feuilles = new ArrayList<>();
         if (inf == null && eq == null && sup == null) {
             feuilles.add(this);
             return feuilles;
@@ -191,7 +257,8 @@ public class Hybride {
 
     }
 
-    public Double ProfondeurMoyenne() {
+    @Override
+    public double profondeurMoyenne() {
         int prof = 0;
         int nbrFeuille = (this.getFeuilles()).size();
         for (Hybride feuille : this.getFeuilles()) {
@@ -200,6 +267,7 @@ public class Hybride {
         return (double) prof / (double) nbrFeuille;
     }
 
+    @Override
     public int prefixe(String mot) {
         int nbPrefixe = 0;
         if (mot.isEmpty() || this.estVide())
@@ -231,7 +299,8 @@ public class Hybride {
         return nbPrefixe;
     }
 
-    public boolean suppression(String mot) {
+    @Override
+    public boolean supprimer(String mot) {
         if (mot.isEmpty() || this.estVide())
             return false;
         if (mot.length() == 1) {
@@ -257,25 +326,19 @@ public class Hybride {
         } else {
             char p = mot.charAt(0);
             if (p == valeur) {
-                if (eq == null)
-                    return false;
-                return eq.suppression(mot.substring(1));
+                return eq != null && eq.supprimer(mot.substring(1));
             }
             if (p < valeur) {
-                if (inf == null)
-                    return false;
-                return inf.suppression(mot);
+                return inf != null && inf.supprimer(mot);
             }
             if (p > valeur) {
-                if (sup == null)
-                    return false;
-                return sup.suppression(mot);
+                return sup != null && sup.supprimer(mot);
             }
         }
         return false;
     }
 
-    public boolean isLeaf() {
+    private boolean isLeaf() {
         boolean videEq = true;
         boolean videInf = true;
         boolean videSup = true;
@@ -289,11 +352,11 @@ public class Hybride {
         return videEq && videInf && videSup;
     }
 
-    public Hybride[] getSousArbres() {
+    private Hybride[] getSousArbres() {
         return new Hybride[]{inf, eq, sup};
     }
 
-    private boolean couperLesBranchesInutiles() {
+    private void couperLesBranchesInutiles() {
         Hybride pere = this.pere;
         Hybride self = this;
         while (pere != null && pere.comptageMots() == 0) {
@@ -307,13 +370,12 @@ public class Hybride {
             self.inf = null;
             self.eq = null;
             self.inf = null;
-            return true;
+            return;
         } else if (self.position == 0) {
             //on coupe la branche inutile
             self.supprimerDansPere();
-            return true;
+            return;
         }
-        return false;
     }
 
     private boolean supprimerDansPere() {
@@ -346,7 +408,7 @@ public class Hybride {
         for (int i = 0; i < lb; i++) {
             sb.append("|\t");
         }
-        sb.append(valeur + (position != 0 ? "," + position : "  ") + "\n");
+        sb.append(valeur).append(position != 0 ? "," + position : "  ").append("\n");
         Hybride[] fils = getSousArbres();
         for (Hybride h : fils) {
             if (h == null) {

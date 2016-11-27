@@ -1,27 +1,27 @@
-package trie;
+package projet.algav.trie;
 
+import com.google.gson.*;
+import com.google.gson.annotations.Expose;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class Patricia {
-    private static String finMot = "∅";
+public class Patricia implements Trie {
+    private final static String finMot = "∅";
     private HashMap<String, Patricia> cle;
-    private Patricia pere;
+    @Expose(serialize = false, deserialize = false)
+    transient private Patricia pere;
 
 
     public Patricia() {
-        this.cle = new HashMap<String, Patricia>();
-    }
-
-    private Patricia(Patricia pere) {
-        this.pere = pere;
-        this.cle = new HashMap<String, Patricia>();
+        this.cle = new HashMap<>();
     }
 
     private Patricia(String mot, Patricia cle) {
-        this.cle = new HashMap<String, Patricia>();
+        this.cle = new HashMap<>();
         this.cle.put(mot, cle);
     }
 
@@ -39,22 +39,24 @@ public class Patricia {
         return a.substring(0, longueurPlusGrandPrefixeCommun(a, b));
     }
 
+    @Override
     public boolean estVide() {
         return this.cle.isEmpty();
     }
 
     public List<String> valeursRacine() {
-        List<String> values = new ArrayList<String>(this.cle.keySet());
+        List<String> values = new ArrayList<>(this.cle.keySet());
         Collections.sort(values);
         return values;
     }
 
     public Patricia sousArbre(int i) {
-        List<String> values = new ArrayList<String>(this.cle.keySet());
+        List<String> values = new ArrayList<>(this.cle.keySet());
         Collections.sort(values);
         return this.cle.get(values.get(i));
     }
 
+    @Override
     public void ajouter(String mot) {
         if (!mot.isEmpty()) {
             if (this.estVide()) {
@@ -95,12 +97,14 @@ public class Patricia {
     }
 
     private String maCleDansPere() {
-        for (String key : pere.cle.keySet())
-            if (pere.cle.get(key) == this)
-                return key;
+        if (pere != null && pere.cle != null)
+            for (String key : pere.cle.keySet())
+                if (pere.cle.get(key) == this)
+                    return key;
         return null;
     }
 
+    @Override
     public boolean supprimer(String mot) {
         if (mot.isEmpty() && (this.hasFinMot())) {
             cle.remove(finMot);
@@ -111,14 +115,14 @@ public class Patricia {
             if (lp != 0 && lp == s.length())
                 if (cle.get(s).supprimer(mot.substring(lp))) {
                     Patricia sousArbre = cle.get(s);
-                    if (sousArbre.cle.size()==0) {
+                    if (sousArbre.cle.size() == 0) {
                         cle.remove(s);
                         return true;
                     }
-                    String cleFils= (String) sousArbre.cle.keySet().toArray()[0];
-                    if (sousArbre.cle.size()==1 && cleFils != finMot){
+                    String cleFils = (String) sousArbre.cle.keySet().toArray()[0];
+                    if (sousArbre.cle.size() == 1 && !cleFils.equals(finMot)) {
                         cle.remove(s);
-                        cle.put(s+cleFils,sousArbre.cle.get(cleFils));
+                        cle.put(s + cleFils, sousArbre.cle.get(cleFils));
                         sousArbre.cle.get(cleFils).pere = this;
                         return true;
                     }
@@ -128,6 +132,7 @@ public class Patricia {
         return false;
     }
 
+    @Override
     public boolean recherche(String mot) {
         if (mot.isEmpty() && (this.hasFinMot()))
             return true;
@@ -140,6 +145,7 @@ public class Patricia {
         return false;
     }
 
+    @Override
     public int prefixe(String mot) {
         if (mot.isEmpty()) {
             return this.comptageMots();
@@ -153,9 +159,14 @@ public class Patricia {
         return 0;
     }
 
+    @Override
+    public int comptageNil() {
+        return comptageMots();
+    }
+
     public List<String> ayantLePrefixe(String mot) {
         List<String> suffixes = listeSuffixe(mot);
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (String suffixe : suffixes) {
             res.add(mot + suffixe);
         }
@@ -174,9 +185,10 @@ public class Patricia {
                 return cle.get(s).listeSuffixe(mot.substring(lp));
             }
         }
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 
+    @Override
     public int hauteur() {
         int hMax = 0;
         if (this.cle.isEmpty())
@@ -189,8 +201,9 @@ public class Patricia {
         return hMax + 1;
     }
 
+    @Override
     public List<String> listeMots() {
-        ArrayList<String> mots = new ArrayList<String>();
+        ArrayList<String> mots = new ArrayList<>();
         for (StringBuilder sb : this.listeMotsRecursive()) {
             mots.add(sb.toString());
         }
@@ -199,7 +212,7 @@ public class Patricia {
     }
 
     private ArrayList<StringBuilder> listeMotsRecursive() {
-        ArrayList<StringBuilder> res = new ArrayList<StringBuilder>();
+        ArrayList<StringBuilder> res = new ArrayList<>();
         for (String s : cle.keySet()) {
             //si feille on ajoute un mot vide
             if (s.equals(finMot))
@@ -215,6 +228,7 @@ public class Patricia {
         return res;
     }
 
+    @Override
     public int comptageMots() {
         int nbMot = 0;
         if (cle.keySet().contains(finMot))
@@ -224,6 +238,7 @@ public class Patricia {
         return nbMot;
     }
 
+    @Override
     public double profondeurMoyenne() {
         int sommeProfondeur = 0;
         ArrayList<Patricia> feuilles = getFeuilles();
@@ -259,14 +274,79 @@ public class Patricia {
     }
 
     private ArrayList<Patricia> getFeuilles() {
-        ArrayList<Patricia> alpt = new ArrayList<Patricia>();
+        ArrayList<Patricia> alpt = new ArrayList<>();
         if (cle.keySet().contains(finMot))
             alpt.add(this);
         for (Patricia pt : cle.values())
             alpt.addAll(pt.getFeuilles());
-
-
         return alpt;
+    }
+
+    @Override
+    public JsonElement toNoCollapsibleJSON() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        JsonSerializer<Patricia> serializer = new JsonSerializer<Patricia>() {
+            public JsonElement serialize(Patricia patricia, Type type, JsonSerializationContext jsonSerializationContext) {
+                JsonObject jsonObject = new JsonObject();
+                if (pere != null) {
+                    jsonObject.addProperty("name", maCleDansPere());
+                    jsonObject.addProperty("parent", (pere.maCleDansPere() != null ? pere.maCleDansPere() : ""));
+                } else {
+                    jsonObject.addProperty("name", "");
+                    jsonObject.addProperty("parent", "null");
+                }
+                JsonArray children = new JsonArray();
+                for (String s : patricia.valeursRacine())
+                    if (!s.equals(finMot))
+                        children.add(patricia.cle.get(s).toNoCollapsibleJSON());
+                    else {
+                        JsonObject tmp = new JsonObject();
+                        tmp.addProperty("name", finMot);
+                        tmp.addProperty("parent", pere != null ? (pere.maCleDansPere() != null ? pere.maCleDansPere() : "null") : "null");
+                        children.add(tmp);
+                    }
+                jsonObject.add("children", children);
+                if (pere != null)
+                    return jsonObject;
+                else {
+                    JsonArray tmp = new JsonArray();
+                    tmp.add(jsonObject);
+                    return tmp;
+                }
+            }
+        };
+        gsonBuilder.registerTypeAdapter(Patricia.class, serializer);
+        Gson customGson;
+        customGson = gsonBuilder.create();
+        return customGson.toJsonTree(this);
+    }
+
+    @Override
+    public JsonElement toCollapsibleJSON() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        JsonSerializer<Patricia> serializer = new JsonSerializer<Patricia>() {
+            public JsonElement serialize(Patricia patricia, Type type, JsonSerializationContext jsonSerializationContext) {
+                JsonObject jsonObject = new JsonObject();
+                if (pere != null)
+                    jsonObject.addProperty("name", maCleDansPere());
+                else
+                    jsonObject.addProperty("name", "");
+                JsonArray children = new JsonArray();
+                for (String s : patricia.valeursRacine())
+                    if (!s.equals(finMot))
+                        children.add(patricia.cle.get(s).toCollapsibleJSON());
+                    else {
+                        JsonObject tmp = new JsonObject();
+                        tmp.addProperty("name", finMot);
+                        children.add(tmp);
+                    }
+                jsonObject.add("children", children);
+                return jsonObject;
+            }
+        };
+        gsonBuilder.registerTypeAdapter(Patricia.class, serializer);
+        Gson customGson = gsonBuilder.create();
+        return customGson.toJsonTree(this);
     }
 
     @Override
@@ -276,14 +356,14 @@ public class Patricia {
             for (int i = 0; i < this.longueurDeLabranche(); i++) {
                 sb.append("|\t");
             }
-            sb.append(s + "\n").append(this.cle.get(s).toString());
+            sb.append(s).append("\n").append(this.cle.get(s).toString());
         }
         return sb.toString();
         //return this.cle.toString();
     }
 
     private List<String> ajouterPrefixe(String mot, List<String> list) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         for (String suffixe : list) {
             res.add(mot + suffixe);
         }

@@ -1,6 +1,6 @@
 .idea/
 out/
-projet-ALGAV.iml
+*.iml
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
