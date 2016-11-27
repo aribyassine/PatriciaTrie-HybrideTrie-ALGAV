@@ -239,6 +239,20 @@ public class Hybride implements Trie {
 
     }
 
+    @Override
+    public int largeur() {
+        if (this.isLeaf())
+            return 3;
+        int cpt = 0;
+        if (inf != null)
+            cpt += inf.largeur();
+        if (eq != null)
+            cpt += eq.largeur();
+        if (sup != null)
+            cpt += sup.largeur();
+        return cpt;
+    }
+
     private List<Hybride> getFeuilles() {
         List<Hybride> feuilles = new ArrayList<>();
         if (inf == null && eq == null && sup == null) {

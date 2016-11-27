@@ -22,6 +22,8 @@ public interface Trie {
 
     int hauteur();
 
+    int largeur();
+
     List<String> listeMots();
 
     int comptageMots();

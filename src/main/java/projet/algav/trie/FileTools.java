@@ -2,13 +2,26 @@ package projet.algav.trie;
 
 import java.io.*;
 
-public class FileGenerator {
-    private static void writer(String path, String arg) throws IOException {
-        Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "utf-8"));
-        writer.write(arg);
-        writer.close();
-    }
+public class FileTools {
 
+    public static boolean addWordsFromFile(Trie trie, String path) {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            try {
+                String line = br.readLine();
+                while (line != null) {
+                    trie.ajouter(line);
+                    line = br.readLine();
+                }
+            } finally {
+                br.close();
+            }
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     public static boolean generateHtmlFile(Trie trie, String directory, String fileName) {
         String path = directory + fileName;
         try {
@@ -22,7 +35,11 @@ public class FileGenerator {
             return false;
         }
     }
-
+    private static void writer(String path, String arg) throws IOException {
+        Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "utf-8"));
+        writer.write(arg);
+        writer.close();
+    }
     private static String HtmlNoCollapsible(Trie trie, String fileName) {
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
@@ -74,8 +91,8 @@ public class FileGenerator {
                 "\n" +
                 "// ************** Generate the tree diagram  *****************\n" +
                 "var margin = {top: 20, right: 60, bottom: 20, left: 60},\n" +
-                "  width = "+ Math.max(trie.hauteur() * 150 + 300, 1550) +" - margin.right - margin.left,\n" +
-                "  height = 650 - margin.top - margin.bottom;\n" +
+                "  width = "+ Math.max(trie.hauteur() * 190 + 300, 1550) +" - margin.right - margin.left,\n" +
+                "  height = "+ Math.max(trie.largeur() * 20 , 650) +" - margin.top - margin.bottom;\n" +
                 "  \n" +
                 "var i = 0;\n" +
                 "\n" +
@@ -104,7 +121,7 @@ public class FileGenerator {
                 "    links = tree.links(nodes);\n" +
                 "\n" +
                 "  // Normalize for fixed-depth.\n" +
-                "  nodes.forEach(function(d) { d.y = d.depth * 150; });\n" +
+                "  nodes.forEach(function(d) { d.y = d.depth * 190; });\n" +
                 "\n" +
                 "  // Declare the nodes…\n" +
                 "  var node = svg.selectAll(\"g.node\")\n" +
@@ -197,8 +214,8 @@ public class FileGenerator {
                         "<script>\n" +
                         "\n" +
                         "var margin = {top: 20, right: 60, bottom: 20, left: 60},\n" +
-                        "    width = " + Math.max(trie.hauteur() * 150 + 300, 1550) + " - margin.right - margin.left,\n" +
-                        "    height = 650 - margin.top - margin.bottom;\n" +
+                        "    width = " + Math.max(trie.hauteur() * 190 + 300, 1550) + " - margin.right - margin.left,\n" +
+                        "    height = 720 - margin.top - margin.bottom;\n" +
                         "\n" +
                         "var i = 0,\n" +
                         "    duration = 300,\n" +
@@ -244,7 +261,7 @@ public class FileGenerator {
                         "      links = tree.links(nodes);\n" +
                         "\n" +
                         "  // Normalize for fixed-depth.\n" +
-                        "  nodes.forEach(function(d) { d.y = d.depth * 150; });\n" +
+                        "  nodes.forEach(function(d) { d.y = d.depth * 190; });\n" +
                         "\n" +
                         "  // Update the nodes…\n" +
                         "  var node = svg.selectAll(\"g.node\")\n" +

@@ -201,6 +201,11 @@ public class Patricia implements Trie {
     }
 
     @Override
+    public int largeur() {
+        return comptageMots();
+    }
+
+    @Override
     public List<String> listeMots() {
         ArrayList<String> mots = new ArrayList<>();
         for (StringBuilder sb : this.listeMotsRecursive()) {
