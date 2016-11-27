@@ -63,8 +63,9 @@ public class FileGenerator {
                 "\n" +
                 "Nombre de mot : " + trie.comptageMots() + "<span/>" +
                 "Hauteur : " + trie.hauteur() + "<span/>" +
+                "Nombre de pointeurs vers NIL : " + trie.comptageNil() + "<span/>" +
                 "Profondeur moyenne des feuilles : " + trie.profondeurMoyenne() + "<span/>" +
-                "Nombre de pointeurs vers NIL : " + trie.comptageNil() + "<br/>" +
+                "<br/>" +
                 "ListeMots : " + trie.listeMots() + "<br/>" +
                 "<!-- load the d3.js library --> \n" +
                 "<script src=\"http://d3js.org/d3.v3.min.js\"></script>\n" +
@@ -184,8 +185,9 @@ public class FileGenerator {
 
                         "Nombre de mot : " + trie.comptageMots() + "<span/>" +
                         "Hauteur : " + trie.hauteur() + "<span/>" +
+                        "Nombre de pointeurs vers NIL : " + trie.comptageNil() + "<span/>" +
                         "Profondeur moyenne des feuilles : " + trie.profondeurMoyenne() + "<span/>" +
-                        "Nombre de pointeurs vers NIL : " + trie.comptageNil() + "<br/>" +
+                        "<br/>" +
                         "ListeMots : " + trie.listeMots() + "<br/>" +
 
                         "<script src=\"http://d3js.org/d3.v3.min.js\"></script>\n" +
