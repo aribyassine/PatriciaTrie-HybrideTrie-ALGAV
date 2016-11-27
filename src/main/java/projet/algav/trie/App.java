@@ -15,13 +15,18 @@ public class App {
         for (String s : tab0)
             list.add(s);
 
-        Trie trie = new Patricia();
+        Trie trie;
+        trie = new Patricia();
         for (String s : list) {
             trie.ajouter(s);
         }
-        System.out.println(trie.toCollapsibleJSON());
-        System.out.println(trie);
-        FileGenerator.generate(trie,"C:\\Users\\Yassine\\IdeaProjects\\","pt");
+        FileGenerator.generate(trie,"3d.js\\","Patricia");
+        trie = new Hybride();
+        for (String s : list) {
+            trie.ajouter(s);
+        }
+        FileGenerator.generate(trie,"3d.js\\","Hybride");
+
         //System.out.println(gson.toJson(pt));
 //        Collections.shuffle(list);
 //        for (String s : list) {
