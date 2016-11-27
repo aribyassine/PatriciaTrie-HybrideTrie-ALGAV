@@ -27,9 +27,9 @@ public class App {
         for (String s : tab3)
             list3.add(s);
 
-        Patricia p1 = new Patricia();
-        Patricia p2 = new Patricia();
-        Patricia p3 = new Patricia();
+        Hybride p1 = new Hybride();
+        Hybride p2 = new Hybride();
+        Hybride p3 = new Hybride();
 
         for (String s : list1) {
             p1.ajouter(s);

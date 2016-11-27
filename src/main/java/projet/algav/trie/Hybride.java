@@ -47,14 +47,14 @@ public class Hybride implements Trie {
                 if (sup == null)
                     sup = new Hybride(this);
                 sup.ajouter(mot);
-            } else {
-                if (eq == null)
+            } else if (premier == valeur) {
+                if (eq == null && mot.length() != 1)
                     eq = new Hybride(this);
                 if (mot.length() == 1) {
                     cpt++;
                     position = cpt;
-                }
-                eq.ajouter(mot.substring(1));
+                } else
+                    eq.ajouter(mot.substring(1));
             }
         }
     }
@@ -123,7 +123,7 @@ public class Hybride implements Trie {
                 }
                 JsonArray children = new JsonArray();
                 for (Hybride h : hybride.getSousArbres())
-                    if (h != null && h.valeur != motVide)
+                    if (h != null)
                         children.add(h.toNoCollapsibleJSON());
                     else {
                         JsonObject tmp = new JsonObject();
@@ -135,8 +135,7 @@ public class Hybride implements Trie {
                     JsonArray tmp = new JsonArray();
                     tmp.add(jsonObject);
                     return tmp;
-                }
-                else {
+                } else {
                     return jsonObject;
                 }
             }
@@ -156,7 +155,7 @@ public class Hybride implements Trie {
                 jsonObject.addProperty("name", valeur + (position != 0 ? "," + position : "  "));
                 JsonArray children = new JsonArray();
                 for (Hybride h : hybride.getSousArbres())
-                    if (h != null && h.valeur != motVide)
+                    if (h != null)
                         children.add(h.toCollapsibleJSON());
                     else {
                         JsonObject tmp = new JsonObject();
@@ -350,6 +349,50 @@ public class Hybride implements Trie {
             }
         }
         return false;
+    }
+
+    public void fusion(Hybride hybride) {
+        if (hybride != null) {
+            if (estVide()) {
+                this.initialisation(hybride);
+            } else if (this.valeur == hybride.valeur) {
+                if (eq == null) {
+                    eq = hybride.eq;
+                    if (eq != null)
+                        eq.pere = this;
+                } else eq.fusion(hybride.eq);
+                if (inf == null) {
+                    inf = hybride.inf;
+                    if (inf != null)
+                        inf.pere = this;
+                } else inf.fusion(hybride.inf);
+                if (sup == null) {
+                    sup = hybride.sup;
+                    if (sup != null)
+                        sup.pere = this;
+                } else sup.fusion(hybride.sup);
+            } else if (this.valeur > hybride.valeur) {
+                if (inf == null) {
+                    inf = hybride;
+                    if (inf != null)
+                        inf.pere = this;
+                } else inf.fusion(hybride);
+            } else if (this.valeur < hybride.valeur) {
+                if (sup == null) {
+                    sup = hybride;
+                    if (sup != null)
+                        sup.pere = this;
+                } else sup.fusion(hybride);
+            }
+        }
+    }
+
+    public void initialisation(Hybride hybride) {
+        this.valeur = hybride.valeur;
+        this.eq = hybride.eq;
+        this.inf = hybride.inf;
+        this.sup = hybride.sup;
+        this.valeur = hybride.valeur;
     }
 
     private boolean isLeaf() {
