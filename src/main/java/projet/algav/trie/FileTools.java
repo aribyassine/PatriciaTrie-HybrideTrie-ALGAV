@@ -26,9 +26,9 @@ public class FileTools {
         String path = directory + fileName;
         try {
             writer(path + "_Collapsible.json", trie.toCollapsibleJSON().toString());
-            writer(path + "_noCollapsible.json", trie.toNoCollapsibleJSON().toString());
+            writer(path + "_notCollapsible.json", trie.toNoCollapsibleJSON().toString());
             writer(path + "_Collapsible.html", HtmlCollapsible(trie, fileName));
-            writer(path + "_noCollapsible.html", HtmlNoCollapsible(trie, fileName));
+            writer(path + "_notCollapsible.html", HtmlNotCollapsible(trie, fileName));
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,7 +40,7 @@ public class FileTools {
         writer.write(arg);
         writer.close();
     }
-    private static String HtmlNoCollapsible(Trie trie, String fileName) {
+    private static String HtmlNotCollapsible(Trie trie, String fileName) {
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "  <head>\n" +
@@ -109,7 +109,7 @@ public class FileTools {
                 "  .attr(\"transform\", \"translate(\" + margin.left + \",\" + margin.top + \")\");\n" +
                 "\n" +
                 "// load the external data\n" +
-                "d3.json(\""+ fileName + "_noCollapsible.json" +"\", function(error, treeData) {\n" +
+                "d3.json(\""+ fileName + "_notCollapsible.json" +"\", function(error, treeData) {\n" +
                 "  root = treeData[0];\n" +
                 "  update(root);\n" +
                 "});\n" +

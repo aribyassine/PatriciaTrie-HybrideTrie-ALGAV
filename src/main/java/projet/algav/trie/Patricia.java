@@ -353,6 +353,70 @@ public class Patricia implements Trie {
         return customGson.toJsonTree(this);
     }
 
+    public Patricia fusion(Patricia pt) {
+        for (int i = 0; i < this.cle.keySet().size(); i++) {
+            String s = (String) this.cle.keySet().toArray()[i];
+            for (int j = i; j < pt.cle.keySet().size(); j++) {
+                String p = (String) pt.cle.keySet().toArray()[j];
+                int lp = longueurPlusGrandPrefixeCommun(p, s);
+                if (lp != 0)
+                    if (s.length() == lp && p.length() == lp) {
+                        this.cle.get(s).fusion(pt.cle.get(p));
+                        break;
+                    } else if (p.length() == lp) {
+                        Patricia inter = new Patricia();
+                        inter.pere = this;
+                        Patricia tmp = this.cle.get(s);
+                        this.cle.remove(s);
+                        tmp.pere = inter;
+                        inter.cle.put(s.substring(lp), tmp);
+                        this.cle.put(p, inter);
+                        break;
+                    } else if (s.length() == lp) {
+                        Patricia inter = new Patricia();
+                        inter.pere = this;
+                        Patricia tmp = this.cle.get(s);
+                        tmp.pere = inter;
+                        inter.cle.put(p.substring(lp), tmp);
+                        this.cle.replace(s, inter);
+                        break;
+                    } else {
+                        Patricia inter = new Patricia();
+                        inter.pere = this;
+                        Patricia tmp = this.cle.get(s);
+                        this.cle.remove(s);
+                        this.cle.put(s.substring(0, lp), inter);
+                        inter.cle.put(s.substring(lp), tmp);
+                        inter.cle.put(p.substring(lp), pt.cle.get(p));
+                    }
+                else {
+                    cle.put(p, pt.cle.get(p));
+                }
+            }
+        }
+
+
+/*            for (String p : lp)
+                if(s.contains(p))
+                    if (p.length() == s.length()){
+
+                    }else {
+
+                    }*/
+        return this;
+    }
+
+    private static ArrayList<String> listPrefixCommun(Patricia p1, Patricia p2) {
+        ArrayList<String> res = new ArrayList<>();
+        for (String s1 : p1.cle.keySet())
+            for (String s2 : p2.cle.keySet()) {
+                int lp = longueurPlusGrandPrefixeCommun(s1, s2);
+                if (lp != 0)
+                    res.add(s1.substring(0, lp));
+            }
+        return res;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
