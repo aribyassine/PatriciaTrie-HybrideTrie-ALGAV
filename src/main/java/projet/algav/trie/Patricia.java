@@ -356,28 +356,84 @@ public class Patricia implements Trie {
     public Patricia fusion(Patricia pt) {
         for (int i = 0; i < this.cle.keySet().size(); i++) {
             String s = this.valeursRacine().get(i);
-            String prefixe = prefixCommun(s,pt);
-            if (prefixe != null){
-                if (s.equals(prefixe))
-                    for (Patricia p:pt.cle.values()) {
-                        cle.get(s).fusion(p);
+            String prefixe = prefixCommun(s, pt);
+            if (prefixe != null)
+                //prefixe complet dans les deux arbres
+                if (this.cle.containsKey(prefixe) && pt.cle.containsKey(prefixe)) {
+                    for (int j = 0; j < pt.cle.size(); j++) {
+                        String val = (String)pt.cle.keySet().toArray()[j];
+                        if (val.equals(prefixe)) {
+                            cle.get(prefixe).fusion(pt.cle.get(prefixe));
+                            pt.cle.remove(val);
+                        }
                     }
-                else{
-
+                    if (!this.estVide())
+                        FileTools.generateHtmlFile(this, "3d.js\\", "debug" + prefixe + this.hashCode());
                 }
-            }else {
-
-            }
+                // prefixe complet dans this et prefixe partiel dans pt
+                else if (this.cle.containsKey(prefixe)) {
+                    for (int j = 0; j < pt.cle.size(); j++) {
+                        String val = (String) pt.cle.keySet().toArray()[j];
+                        if (val.contains(prefixe)) {
+                            Patricia tmp = new Patricia();
+                            tmp.ajouterCleValeur(val.substring(prefixe.length()), pt.cle.get(val));
+                            this.cle.get(prefixe).fusion(tmp);
+                            pt.cle.remove(val);
+                        }
+                    }
+                }
+                // prefixe complet dans pt et prefixe partiel dans this
+                else if (pt.cle.containsKey(prefixe)) {
+                    for (int j = 0; j < pt.cle.size(); j++) {
+                        String val = (String)pt.cle.keySet().toArray()[j];
+                        if (val.equals(prefixe)) {
+                            Patricia inter = new Patricia();
+                            Patricia tmp = this.cle.get(s);
+                            this.ajouterCleValeur(prefixe, inter);
+                            inter.ajouterCleValeur(s.substring(prefixe.length()), tmp);
+                            this.cle.remove(s);
+                            inter.fusion(pt.cle.get(prefixe));
+                            pt.cle.remove(val);
+                        }
+                    }
+                }
+                //prefixe partiel dans les deux arbres
+                else {
+                    Patricia inter = new Patricia();
+                    Patricia tmp = this.cle.get(s);
+                    this.ajouterCleValeur(prefixe, inter);
+                    inter.ajouterCleValeur(s.substring(prefixe.length()), tmp);
+                    this.cle.remove(s);
+                    for (int j = 0; j < pt.cle.size(); j++) {
+                        String val = (String) pt.cle.keySet().toArray()[j];
+                        if (val.contains(prefixe)) {
+                            inter = new Patricia();
+                            this.ajouterCleValeur(prefixe, inter);
+                            inter.ajouterCleValeur(val.substring(prefixe.length()), pt.cle.get(val));
+                            pt.cle.remove(val);
+                        }
+                    }
+                }
+                // pas de prefixe commun
+            else
+                for (String val : pt.cle.keySet())
+                    this.ajouterCleValeur(val, pt.cle.get(val));
         }
+        pt = null;
         return this;
     }
 
+    private void ajouterCleValeur(String cle, Patricia valeur) {
+        valeur.pere = this;
+        this.cle.put(cle, valeur);
+    }
+
     private static String prefixCommun(String s, Patricia p) {
-        for (String ps : p.cle.keySet()){
-                int lp = longueurPlusGrandPrefixeCommun(s, ps);
-                if (lp != 0)
-                    return s.substring(0, lp);
-            }
+        for (String ps : p.cle.keySet()) {
+            int lp = longueurPlusGrandPrefixeCommun(s, ps);
+            if (lp != 0)
+                return s.substring(0, lp);
+        }
         return null;
     }
 

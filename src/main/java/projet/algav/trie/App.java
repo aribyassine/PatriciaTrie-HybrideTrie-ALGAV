@@ -13,8 +13,10 @@ public class App {
         String exemple = "A quel genial professeur de dactylographie sommes nous redevables de la superbe phrase ci dessous, un modele du genre, que toute dactylo connait par coeur puisque elle fait appel a chacune des touches du clavier de la machine a ecrire ?";
         String[] tab0 = {"a", "ab", "ac", "ad", "af", "abc", "abcd", "abcde", "abcdef", "romane", "romanus", "romulus", "rubens", "ruber", "rubicon", "rubicundus", "rubic", "rom"};
         String[] tab1 = exemple.split(" ");
-        String[] tab2 = {"ac", "ab", "bcd", "cd", "d"};
-        String[] tab3 = {"ac", "ad", "bc", "cde", "e"};
+        String[] tab2 = {"a", "b"};
+        String[] tab3 = {"b", "d"};
+//        String[] tab2 = {"ac", "ab", "bcd", "cd", "d"};
+//        String[] tab3 = {"ac", "ad", "bc", "cde", "e"};
         ArrayList<String> list1 = new ArrayList<>();
         ArrayList<String> list2 = new ArrayList<>();
         ArrayList<String> list3 = new ArrayList<>();
@@ -27,9 +29,9 @@ public class App {
         for (String s : tab3)
             list3.add(s);
 
-        Hybride p1 = new Hybride();
-        Hybride p2 = new Hybride();
-        Hybride p3 = new Hybride();
+        Patricia p1 = new Patricia();
+        Patricia p2 = new Patricia();
+        Patricia p3 = new Patricia();
 
         for (String s : list1) {
             p1.ajouter(s);
