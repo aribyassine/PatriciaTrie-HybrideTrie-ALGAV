@@ -1,8 +1,12 @@
-package projet.algav.trie;
+package projet.algav;
+
+import projet.algav.trie.Trie;
 
 import java.io.*;
 
 public class FileTools {
+    private static final String dossier = "out/";
+    private static final String dossierJSON = "JSON/";
 
     public static boolean addWordsFromFile(Trie trie, String path) {
         try {
@@ -22,31 +26,38 @@ public class FileTools {
             return false;
         }
     }
-    public static boolean generateHtmlFile(Trie trie, String directory, String fileName) {
-        String path = directory + fileName;
+
+    public static boolean generateHtmlFile(Trie trie, String fileName) {
         try {
-            writer(path + "_Collapsible.json", trie.toCollapsibleJSON().toString());
-            writer(path + "_notCollapsible.json", trie.toNoCollapsibleJSON().toString());
-            writer(path + "_Collapsible.html", HtmlCollapsible(trie, fileName));
-            writer(path + "_notCollapsible.html", HtmlNotCollapsible(trie, fileName));
+            if (!new File(dossier).exists())
+                new File(dossier).mkdirs();
+            if (!new File(dossier + dossierJSON).exists())
+                new File(dossier + dossierJSON).mkdirs();
+
+            write(dossier + dossierJSON + fileName + "_Collapsible.json", trie.toCollapsibleJSON().toString());
+            write(dossier + dossierJSON + fileName + "_notCollapsible.json", trie.toNoCollapsibleJSON().toString());
+            write(dossier + fileName + "_Collapsible.html", HtmlCollapsible(trie, fileName));
+            write(dossier + fileName + "_notCollapsible.html", HtmlNotCollapsible(trie, fileName));
             return true;
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
     }
-    private static void writer(String path, String arg) throws IOException {
-        Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path), "utf-8"));
+
+    private static void write(String fileName, String arg) throws IOException {
+        Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "utf-8"));
         writer.write(arg);
         writer.close();
     }
+
     private static String HtmlNotCollapsible(Trie trie, String fileName) {
         return "<!DOCTYPE html>\n" +
                 "<html lang=\"en\">\n" +
                 "  <head>\n" +
                 "    <meta charset=\"utf-8\">\n" +
                 "\n" +
-                "    <title>Not Collapsible "+trie.getClass().getSimpleName()+" Trie</title>\n" +
+                "    <title>Not Collapsible " + trie.getClass().getSimpleName() + " Trie</title>\n" +
                 "\n" +
                 "    <style>\n" +
                 "\n" +
@@ -87,12 +98,45 @@ public class FileTools {
                 "<!-- load the d3.js library --> \n" +
                 "<script src=\"http://d3js.org/d3.v3.min.js\"></script>\n" +
                 "  \n" +
+                "<script type=\"text/javascript\">\n" +
+                "function getWindowHeight() {\n" +
+                "    var windowHeight=0;\n" +
+                "    if (typeof(window.innerHeight)=='number') {\n" +
+                "        windowHeight=window.innerHeight;\n" +
+                "    } else {\n" +
+                "        if (document.documentElement&& document.documentElement.clientHeight) {\n" +
+                "            windowHeight = document.documentElement.clientHeight;\n" +
+                "        } else {\n" +
+                "            if (document.body&&document.body.clientHeight) {\n" +
+                "                windowHeight=document.body.clientHeight;\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                "    return windowHeight;\n" +
+                "}\n" +
+                "function getWindowWidth() {\n" +
+                " var windowWidth=0;\n" +
+                " if (typeof(window.innerWidth)=='number') {\n" +
+                "  windowWidth=window.innerWidth;\n" +
+                "    } else {\n" +
+                "  if (document.documentElement&& document.documentElement.clientWidth) {\n" +
+                "   windowWidth = document.documentElement.clientWidth;\n" +
+                "        } else {\n" +
+                "   if (document.body&&document.body.clientWidth) {\n" +
+                "    windowWidth=document.body.clientWidth;\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                " return windowWidth;\n" +
+                "}\n" +
+                " \n" +
+                "</script>" +
                 "<script>\n" +
                 "\n" +
                 "// ************** Generate the tree diagram  *****************\n" +
                 "var margin = {top: 20, right: 60, bottom: 20, left: 60},\n" +
-                "  width = "+ Math.max(trie.hauteur() * 190 + 300, 1550) +" - margin.right - margin.left,\n" +
-                "  height = "+ Math.max(trie.largeur() * 20 , 650) +" - margin.top - margin.bottom;\n" +
+                "  width = Math.max(getWindowWidth()," + (trie.hauteur() * 190 + 300) + ") - margin.right - margin.left,\n" +
+                "  height = Math.max(getWindowHeight()," + (trie.largeur() * 22) + ") - margin.top - margin.bottom;" +
                 "  \n" +
                 "var i = 0;\n" +
                 "\n" +
@@ -109,7 +153,7 @@ public class FileTools {
                 "  .attr(\"transform\", \"translate(\" + margin.left + \",\" + margin.top + \")\");\n" +
                 "\n" +
                 "// load the external data\n" +
-                "d3.json(\""+ fileName + "_notCollapsible.json" +"\", function(error, treeData) {\n" +
+                "d3.json(\"" + dossierJSON + fileName + "_notCollapsible.json" + "\", function(error, treeData) {\n" +
                 "  root = treeData[0];\n" +
                 "  update(root);\n" +
                 "});\n" +
@@ -168,7 +212,7 @@ public class FileTools {
                 "<!DOCTYPE html>\n" +
                         "<meta charset=\"utf-8\">\n" +
                         "\n" +
-                        "    <title>Collapsible "+trie.getClass().getSimpleName()+" Trie</title>\n" +
+                        "    <title>Collapsible " + trie.getClass().getSimpleName() + " Trie</title>\n" +
                         "\n" +
                         "<style>\n" +
                         "\n" +
@@ -211,11 +255,44 @@ public class FileTools {
                         "Liste des mots : " + trie.listeMots() + "<br/>" +
 
                         "<script src=\"http://d3js.org/d3.v3.min.js\"></script>\n" +
+                        "<script type=\"text/javascript\">\n" +
+                        "function getWindowHeight() {\n" +
+                        "    var windowHeight=0;\n" +
+                        "    if (typeof(window.innerHeight)=='number') {\n" +
+                        "        windowHeight=window.innerHeight;\n" +
+                        "    } else {\n" +
+                        "        if (document.documentElement&& document.documentElement.clientHeight) {\n" +
+                        "            windowHeight = document.documentElement.clientHeight;\n" +
+                        "        } else {\n" +
+                        "            if (document.body&&document.body.clientHeight) {\n" +
+                        "                windowHeight=document.body.clientHeight;\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "    }\n" +
+                        "    return windowHeight;\n" +
+                        "}\n" +
+                        "function getWindowWidth() {\n" +
+                        " var windowWidth=0;\n" +
+                        " if (typeof(window.innerWidth)=='number') {\n" +
+                        "  windowWidth=window.innerWidth;\n" +
+                        "    } else {\n" +
+                        "  if (document.documentElement&& document.documentElement.clientWidth) {\n" +
+                        "   windowWidth = document.documentElement.clientWidth;\n" +
+                        "        } else {\n" +
+                        "   if (document.body&&document.body.clientWidth) {\n" +
+                        "    windowWidth=document.body.clientWidth;\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "    }\n" +
+                        " return windowWidth;\n" +
+                        "}\n" +
+                        " \n" +
+                        "</script>" +
                         "<script>\n" +
                         "\n" +
                         "var margin = {top: 20, right: 60, bottom: 20, left: 60},\n" +
-                        "    width = " + Math.max(trie.hauteur() * 190 + 300, 1550) + " - margin.right - margin.left,\n" +
-                        "    height = 720 - margin.top - margin.bottom;\n" +
+                        "  width = Math.max(getWindowWidth()," + (trie.hauteur() * 190 + 300) + ") - margin.right - margin.left,\n" +
+                        "  height = getWindowHeight() - margin.top - margin.bottom;" +
                         "\n" +
                         "var i = 0,\n" +
                         "    duration = 300,\n" +
@@ -233,7 +310,7 @@ public class FileTools {
                         "  .append(\"g\")\n" +
                         "    .attr(\"transform\", \"translate(\" + margin.left + \",\" + margin.top + \")\");\n" +
                         "\n" +
-                        "d3.json(\"" + fileName + "_Collapsible.json" + "\", function(error, flare) {\n" +
+                        "d3.json(\"" + dossierJSON + fileName + "_Collapsible.json" + "\", function(error, flare) {\n" +
                         "  if (error) throw error;\n" +
                         "\n" +
                         "  root = flare;\n" +

@@ -10,9 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Patricia implements Trie {
-    private final static String finMot = "∅";
-    private final HashMap<String, Patricia> cle;
-    private Patricia pere;
+    final static String finMot = "*";
+    final HashMap<String, Patricia> cle;
+    Patricia pere;
 
 
     public Patricia() {
@@ -49,7 +49,7 @@ public class Patricia implements Trie {
         return values;
     }
 
-    public Patricia sousArbre(int i) {
+    private Patricia getSousArbre(int i) {
         List<String> values = new ArrayList<>(this.cle.keySet());
         Collections.sort(values);
         return this.cle.get(values.get(i));
@@ -417,9 +417,13 @@ public class Patricia implements Trie {
         for (String ps : p.cle.keySet()) {
             int lp = longueurPlusGrandPrefixeCommun(s, ps);
             if (lp != 0)
-                return s.substring(0,lp);
+                return s.substring(0, lp);
         }
         return null;
+    }
+
+    public Hybride toHybride() {
+        return ConversionTools.patriciaNodeToHybride(valeursRacine());
     }
 
     @Override
@@ -432,7 +436,6 @@ public class Patricia implements Trie {
             sb.append(s).append("\n").append(this.cle.get(s).toString());
         }
         return sb.toString();
-        //return this.cle.toString();
     }
 
     private List<String> ajouterPrefixe(String mot, List<String> list) {

@@ -2,8 +2,6 @@
 out/
 *.iml
 target/
-3d.js/
-
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

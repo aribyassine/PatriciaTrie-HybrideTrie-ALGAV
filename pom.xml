@@ -32,5 +32,9 @@
             <version>2.8.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations-java5</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -6,19 +6,19 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hybride implements Trie {
-    private static final char motVide = '∅';
-    private static int cpt = 0;
-    private int position = 0;
-    private Hybride inf, sup, eq;
-    private char valeur;
-    private Hybride pere;
+public class Hybride implements Trie, Cloneable {
+    static final char motVide = '∅';
+    static int cpt = 0;
+    int position = 0;
+    Hybride inf, sup, eq;
+    char valeur;
+    Hybride pere;
 
     public Hybride() {
         valeur = motVide;
     }
 
-    private Hybride(Hybride pere) {
+    Hybride(Hybride pere) {
         valeur = motVide;
         this.pere = pere;
     }
@@ -193,10 +193,10 @@ public class Hybride implements Trie {
     public List<String> listeMots() {
         List<String> mots = new ArrayList<>();
         String val = String.valueOf(valeur);
-        if (position != 0)
-            mots.add(val);
         if (inf != null)
             mots.addAll(inf.listeMots());
+        if (position != 0)
+            mots.add(val);
         if (eq != null)
             mots.addAll(ajouterPrefixe(val, eq.listeMots()));
         if (sup != null)
@@ -351,11 +351,13 @@ public class Hybride implements Trie {
         return false;
     }
 
-    public void fusion(Hybride hybride) {
+    public Hybride fusion(Hybride hybride) {
         if (hybride != null) {
             if (estVide()) {
                 this.initialisation(hybride);
-            } else if (this.valeur == hybride.valeur) {
+                return this;
+            }
+            if (this.valeur == hybride.valeur) {
                 if (eq == null) {
                     eq = hybride.eq;
                     if (eq != null)
@@ -373,27 +375,63 @@ public class Hybride implements Trie {
                 } else sup.fusion(hybride.sup);
             } else if (this.valeur > hybride.valeur) {
                 if (inf == null) {
-                    inf = hybride;
-                    if (inf != null)
+                        inf = hybride;
                         inf.pere = this;
+                        if (sup != null)
+                            sup.fusion(hybride.sup);
+                        else
+                            sup = hybride.sup;
+                        if (eq != null)
+                            eq.fusion(hybride.eq);
+                        else
+                            eq = hybride.eq;
+                        inf.sup = null;
                 } else inf.fusion(hybride);
             } else if (this.valeur < hybride.valeur) {
                 if (sup == null) {
-                    sup = hybride;
-                    if (sup != null)
+                        sup = hybride;
                         sup.pere = this;
+                        if (inf != null)
+                            inf.fusion(hybride.inf);
+                        else
+                            inf = hybride.inf;
+                        if (eq != null)
+                            eq.fusion(hybride.eq);
+                        else
+                            eq = hybride.eq;
+                        sup.inf = null;
                 } else sup.fusion(hybride);
             }
         }
+        return this;
     }
 
-    public void initialisation(Hybride hybride) {
+    private void initialisation(Hybride hybride) {
         this.valeur = hybride.valeur;
-        this.eq = hybride.eq;
-        this.inf = hybride.inf;
-        this.sup = hybride.sup;
-        this.valeur = hybride.valeur;
+        this.position = hybride.position;
+        this.pere = (Hybride) hybride.pere.clone();
+        this.eq = (Hybride) hybride.eq.clone();
+        this.inf = (Hybride) hybride.inf.clone();
+        this.sup = (Hybride) hybride.sup.clone();
     }
+
+    @Override
+    public Object clone() {
+        Hybride hybride = new Hybride();
+        hybride.valeur = this.valeur;
+        hybride.position = this.position;
+        if (eq != null)
+            hybride.eq = (Hybride) this.eq.clone();
+        if (inf != null)
+            hybride.inf = (Hybride) this.inf.clone();
+        if (sup != null)
+            hybride.sup = (Hybride) this.sup.clone();
+        if (pere != null)
+            hybride.pere = (Hybride) this.pere.clone();
+
+        return hybride;
+    }
+
 
     private boolean isLeaf() {
         boolean videEq = true;
