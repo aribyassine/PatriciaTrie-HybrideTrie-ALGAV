@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Hybride implements Trie, Cloneable {
-    static final char motVide = '∅';
+    private static final char motVide = '∅';
     static int cpt = 0;
     int position = 0;
     Hybride inf, sup, eq;
     char valeur;
-    Hybride pere;
+    private Hybride pere;
 
     public Hybride() {
         valeur = motVide;
@@ -109,7 +109,7 @@ public class Hybride implements Trie, Cloneable {
     }
 
     @Override
-    public JsonElement toNoCollapsibleJSON() {
+    public JsonElement toNotCollapsibleJSON() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         JsonSerializer<Hybride> serializer = new JsonSerializer<Hybride>() {
             @Override
@@ -124,7 +124,7 @@ public class Hybride implements Trie, Cloneable {
                 JsonArray children = new JsonArray();
                 for (Hybride h : hybride.getSousArbres())
                     if (h != null)
-                        children.add(h.toNoCollapsibleJSON());
+                        children.add(h.toNotCollapsibleJSON());
                     else {
                         JsonObject tmp = new JsonObject();
                         tmp.addProperty("name", motVide);
@@ -350,7 +350,12 @@ public class Hybride implements Trie, Cloneable {
         }
         return false;
     }
-    //marche pas tres bien
+
+    /**
+     * @deprecated ne marche pas tres bien à évité
+     * @param hybride
+     * @return
+     */
     public Hybride fusion(Hybride hybride) {
         if (hybride != null) {
             if (estVide()) {
@@ -414,6 +419,7 @@ public class Hybride implements Trie, Cloneable {
         this.inf = (Hybride) hybride.inf.clone();
         this.sup = (Hybride) hybride.sup.clone();
     }
+
     private void initialisation(Hybride hybride) {
         this.valeur = hybride.valeur;
         this.position = hybride.position;
@@ -424,6 +430,11 @@ public class Hybride implements Trie, Cloneable {
 
     @Override
     public Object clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
         Hybride hybride = new Hybride();
         hybride.valeur = this.valeur;
         hybride.position = this.position;
@@ -472,17 +483,15 @@ public class Hybride implements Trie, Cloneable {
             self.inf = null;
             self.eq = null;
             self.inf = null;
-            return;
         } else if (self.position == 0) {
             //on coupe la branche inutile
             self.supprimerDansPere();
-            return;
         }
     }
 
-    private boolean supprimerDansPere() {
+    private void supprimerDansPere() {
         if (pere == null)
-            return false;
+            return;
         Hybride[] sousArbresPere = pere.getSousArbres();
         for (int i = 0; i < sousArbresPere.length; i++) {
             if (sousArbresPere[i] == this) {
@@ -497,10 +506,8 @@ public class Hybride implements Trie, Cloneable {
                         pere.sup = null;
                         break;
                 }
-                return true;
             }
         }
-        return false;
     }
 
     void setPereDansFils() {
@@ -512,7 +519,7 @@ public class Hybride implements Trie, Cloneable {
             sup.pere = this;
     }
 
-    public void equilibre() {
+    private void equilibre() {
         if (this.inf != null)
             this.inf.equilibre();
         if (this.sup != null)
@@ -540,7 +547,7 @@ public class Hybride implements Trie, Cloneable {
         }
     }
 
-    public void rotationGauche() {
+    private void rotationGauche() {
         Hybride h = new Hybride(this);
         if (this.sup == null)
             this.sup = new Hybride(this);
@@ -559,7 +566,7 @@ public class Hybride implements Trie, Cloneable {
         this.initialisation(h2);
     }
 
-    public void rotationDroite() {
+    private void rotationDroite() {
         Hybride h = new Hybride(this);
         h.valeur = this.valeur;
         if (this.inf == null)
@@ -586,10 +593,23 @@ public class Hybride implements Trie, Cloneable {
         }
     }
 
-    private boolean isEquilibre() {
-        int hauteurInf = this.inf == null ? 0 : this.inf.hauteur();
-        int hauteurSup = this.sup == null ? 0 : this.sup.hauteur();
-        return Math.abs(hauteurInf-hauteurSup) <= 2;
+    public boolean isEquilibre() {
+        if(this.eq !=null && this.sup!=null && this.inf !=null){
+            int hauteur_inf = (this.inf==null)? 0 : this.inf.hauteur();
+            int hauteur_eq = (this.eq==null)? 0 : this.eq.hauteur();
+            int hauteur_sup = (this.sup==null)? 0 : this.sup.hauteur();
+
+            if( Math.abs(hauteur_inf-hauteur_eq)<=2
+                    && Math.abs(hauteur_inf-hauteur_sup) <=2
+                    && Math.abs( hauteur_eq - hauteur_sup ) <=2 ){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Patricia toPatricia(){
+        return null;
     }
 
     @Override

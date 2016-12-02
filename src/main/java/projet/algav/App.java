@@ -31,18 +31,15 @@ public class App {
         Patricia p = new Patricia();
         Hybride h = new Hybride();
         Hybride h3 = new Hybride();
-/*        for (String s : list1) {
+      for (String s : list1) {
             p.ajouter(s);
         }
         for (String s : list1) {
-            h.ajouter(s);
+            h.ajouterMotPuisEquilibre(s);
         }
-        for (String s : list3) {
-            h3.ajouter(s);
-        }*/
 
-        FileTools.addWordsFromFile(p,"Shakespeare\\comedy_errors.txt");
-        FileTools.addWordsFromFile(h,"Shakespeare\\comedy_errors.txt");
+//        FileTools.addWordsFromFile(p,"Shakespeare\\comedy_errors.txt");
+//        FileTools.addWordsFromFile(h,"Shakespeare\\comedy_errors.txt");
         FileTools.generateHtmlFile(p, "p");
         FileTools.generateHtmlFile(h, "h");
         FileTools.generateHtmlFile(p.toHybride(), "f");

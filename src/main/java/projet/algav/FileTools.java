@@ -1,6 +1,5 @@
 package projet.algav;
 
-import projet.algav.trie.Hybride;
 import projet.algav.trie.Trie;
 
 import java.io.*;
@@ -36,7 +35,7 @@ public class FileTools {
                 new File(dossier + dossierJSON).mkdirs();
 
             write(dossier + dossierJSON + fileName + "_Collapsible.json", trie.toCollapsibleJSON().toString());
-            write(dossier + dossierJSON + fileName + "_notCollapsible.json", trie.toNoCollapsibleJSON().toString());
+            write(dossier + dossierJSON + fileName + "_notCollapsible.json", trie.toNotCollapsibleJSON().toString());
             write(dossier + fileName + "_Collapsible.html", HtmlCollapsible(trie, fileName));
             write(dossier + fileName + "_notCollapsible.html", HtmlNotCollapsible(trie, fileName));
             return true;
