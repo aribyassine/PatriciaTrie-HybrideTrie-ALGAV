@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Patricia implements Trie {
-    final static String finMot = "*";
+    final static String finMot = "∅";
     final HashMap<String, Patricia> cle;
     Patricia pere;
 
@@ -43,7 +43,7 @@ public class Patricia implements Trie {
         return this.cle.isEmpty();
     }
 
-    private List<String> valeursRacine() {
+    public List<String> valeursRacine() {
         List<String> values = new ArrayList<>(this.cle.keySet());
         Collections.sort(values);
         return values;
@@ -261,7 +261,7 @@ public class Patricia implements Trie {
         return lvl;
     }
 
-    public Patricia getPere() {
+    private Patricia getPere() {
         return pere;
     }
 
@@ -423,7 +423,22 @@ public class Patricia implements Trie {
     }
 
     public Hybride toHybride() {
-        return ConversionTools.patriciaNodeToHybride(valeursRacine());
+        List<String> node = valeursRacine();
+        Hybride res = ConversionTools.patriciaNodeToHybride(node);
+        if (res == null)
+            return null;
+        Hybride sousArbre;
+        for (String val : node) {
+            sousArbre = ConversionTools.getLastHybrideNode(res, val);
+            if (cle.get(val).hasFinMot()) {
+                sousArbre.position = Hybride.cpt++;
+                if (cle.get(val).cle.size() == 1)
+                    continue;
+            }
+            sousArbre.eq = cle.get(val).toHybride();
+            sousArbre.setPereDansFils();
+        }
+        return res;
     }
 
     @Override

@@ -350,11 +350,11 @@ public class Hybride implements Trie, Cloneable {
         }
         return false;
     }
-
+    //marche pas tres bien
     public Hybride fusion(Hybride hybride) {
         if (hybride != null) {
             if (estVide()) {
-                this.initialisation(hybride);
+                this.initialisationClone(hybride);
                 return this;
             }
             if (this.valeur == hybride.valeur) {
@@ -375,44 +375,51 @@ public class Hybride implements Trie, Cloneable {
                 } else sup.fusion(hybride.sup);
             } else if (this.valeur > hybride.valeur) {
                 if (inf == null) {
-                        inf = hybride;
-                        inf.pere = this;
-                        if (sup != null)
-                            sup.fusion(hybride.sup);
-                        else
-                            sup = hybride.sup;
-                        if (eq != null)
-                            eq.fusion(hybride.eq);
-                        else
-                            eq = hybride.eq;
-                        inf.sup = null;
+                    inf = hybride;
+                    inf.pere = this;
+                    if (sup != null)
+                        sup.fusion(hybride.sup);
+                    else
+                        sup = hybride.sup;
+                    if (eq != null)
+                        eq.fusion(hybride.eq);
+                    else
+                        eq = hybride.eq;
+                    inf.sup = null;
                 } else inf.fusion(hybride);
             } else if (this.valeur < hybride.valeur) {
                 if (sup == null) {
-                        sup = hybride;
-                        sup.pere = this;
-                        if (inf != null)
-                            inf.fusion(hybride.inf);
-                        else
-                            inf = hybride.inf;
-                        if (eq != null)
-                            eq.fusion(hybride.eq);
-                        else
-                            eq = hybride.eq;
-                        sup.inf = null;
+                    sup = hybride;
+                    sup.pere = this;
+                    if (inf != null)
+                        inf.fusion(hybride.inf);
+                    else
+                        inf = hybride.inf;
+                    if (eq != null)
+                        eq.fusion(hybride.eq);
+                    else
+                        eq = hybride.eq;
+                    sup.inf = null;
                 } else sup.fusion(hybride);
             }
         }
         return this;
     }
 
-    private void initialisation(Hybride hybride) {
+    private void initialisationClone(Hybride hybride) {
         this.valeur = hybride.valeur;
         this.position = hybride.position;
         this.pere = (Hybride) hybride.pere.clone();
         this.eq = (Hybride) hybride.eq.clone();
         this.inf = (Hybride) hybride.inf.clone();
         this.sup = (Hybride) hybride.sup.clone();
+    }
+    private void initialisation(Hybride hybride) {
+        this.valeur = hybride.valeur;
+        this.position = hybride.position;
+        this.eq = hybride.eq;
+        this.inf = hybride.inf;
+        this.sup = hybride.sup;
     }
 
     @Override
@@ -494,6 +501,95 @@ public class Hybride implements Trie, Cloneable {
             }
         }
         return false;
+    }
+
+    void setPereDansFils() {
+        if (eq != null)
+            eq.pere = this;
+        if (inf != null)
+            inf.pere = this;
+        if (sup != null)
+            sup.pere = this;
+    }
+
+    public void equilibre() {
+        if (this.inf != null)
+            this.inf.equilibre();
+        if (this.sup != null)
+            this.sup.equilibre();
+        if (this.eq != null)
+            this.eq.equilibre();
+
+        int hauteurInf = this.inf == null ? 0 : this.inf.hauteur();
+        int hauteurSup = this.sup == null ? 0 : this.sup.hauteur();
+
+        if (hauteurInf - hauteurSup >= 2) {
+
+            int hauteurInfSup = (this.inf.sup == null) ? 0 : this.inf.sup.hauteur();
+            int hauteurInfInf = (this.inf.inf == null) ? 0 : this.inf.inf.hauteur();
+            if (hauteurInfSup - hauteurInfInf >= 2)
+                this.inf.rotationGauche();
+            this.rotationDroite();
+
+        } else if (hauteurInf - hauteurSup <= -2) {
+            int hauteurSupInf = (this.sup.inf == null) ? 0 : this.sup.inf.hauteur();
+            int hauteurSupSup = (this.sup.sup == null) ? 0 : this.sup.sup.hauteur();
+            if (hauteurSupInf - hauteurSupSup >= 2)
+                this.sup.rotationDroite();
+            this.rotationGauche();
+        }
+    }
+
+    public void rotationGauche() {
+        Hybride h = new Hybride(this);
+        if (this.sup == null)
+            this.sup = new Hybride(this);
+        h.valeur = this.valeur;
+        h.eq = this.eq;
+        h.inf = this.inf;
+        h.sup = this.sup.inf;
+        Hybride h2 = new Hybride(this);
+        if (this.sup == null)
+            this.sup = new Hybride(this);
+        h2.valeur = this.sup.valeur;
+        h2.eq = this.sup.eq;
+        h2.inf = h;
+        h2.sup = this.sup.sup;
+
+        this.initialisation(h2);
+    }
+
+    public void rotationDroite() {
+        Hybride h = new Hybride(this);
+        h.valeur = this.valeur;
+        if (this.inf == null)
+            this.inf = new Hybride(this);
+        h.eq = this.eq;
+        h.inf = this.inf.sup;
+        h.sup = this.sup;
+        Hybride h2 = new Hybride(this);
+        if (this.inf == null)
+            this.inf = new Hybride(this);
+        h2.valeur = this.inf.valeur;
+        h2.eq = this.inf.eq;
+        h2.inf = this.inf.inf;
+        h2.sup = h;
+
+        this.initialisation(h2);
+    }
+
+    public void ajouterMotPuisEquilibre(String mot) {
+        if (mot != null && !mot.isEmpty()) {
+            this.ajouter(mot);
+            if( !isEquilibre() )
+                this.equilibre();
+        }
+    }
+
+    private boolean isEquilibre() {
+        int hauteurInf = this.inf == null ? 0 : this.inf.hauteur();
+        int hauteurSup = this.sup == null ? 0 : this.sup.hauteur();
+        return Math.abs(hauteurInf-hauteurSup) <= 2;
     }
 
     @Override

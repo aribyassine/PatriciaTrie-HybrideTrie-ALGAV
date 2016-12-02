@@ -1,5 +1,6 @@
 package projet.algav;
 
+import projet.algav.trie.Hybride;
 import projet.algav.trie.Trie;
 
 import java.io.*;

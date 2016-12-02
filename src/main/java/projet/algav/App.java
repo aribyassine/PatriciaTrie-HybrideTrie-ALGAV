@@ -1,6 +1,5 @@
 package projet.algav;
 
-import projet.algav.trie.ConversionTools;
 import projet.algav.trie.Hybride;
 import projet.algav.trie.Patricia;
 
@@ -32,7 +31,7 @@ public class App {
         Patricia p = new Patricia();
         Hybride h = new Hybride();
         Hybride h3 = new Hybride();
-        for (String s : list1) {
+/*        for (String s : list1) {
             p.ajouter(s);
         }
         for (String s : list1) {
@@ -40,9 +39,10 @@ public class App {
         }
         for (String s : list3) {
             h3.ajouter(s);
-        }
-//        FileTools.addWordsFromFile(p,"Shakespeare\\1henryiv.txt");
-//        FileTools.addWordsFromFile(h,"Shakespeare\\1henryiv.txt");
+        }*/
+
+        FileTools.addWordsFromFile(p,"Shakespeare\\comedy_errors.txt");
+        FileTools.addWordsFromFile(h,"Shakespeare\\comedy_errors.txt");
         FileTools.generateHtmlFile(p, "p");
         FileTools.generateHtmlFile(h, "h");
         FileTools.generateHtmlFile(p.toHybride(), "f");
