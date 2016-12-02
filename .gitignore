@@ -2,6 +2,7 @@
 out/
 *.iml
 target/
+javaDoc/
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
