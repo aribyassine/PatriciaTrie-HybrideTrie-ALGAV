@@ -37,6 +37,10 @@ public class App {
         for (String s : list1) {
             h.ajouterMotPuisEquilibre(s);
         }
+        for (String s : list1) {
+            System.out.println(p.prefixe(s)+" "+s+" "+p.motsAyantCommePrefixe(s));
+        }
+
 
 //        FileTools.addWordsFromFile(p,"Shakespeare\\comedy_errors.txt");
 //        FileTools.addWordsFromFile(h,"Shakespeare\\comedy_errors.txt");

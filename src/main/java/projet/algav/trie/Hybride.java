@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Hybride implements Trie, Cloneable {
-    private static final char motVide = '∅';
+    private static final char motVide = 'Ø';
     static int cpt = 0;
     int position = 0;
     Hybride inf, sup, eq;
@@ -353,8 +353,8 @@ public class Hybride implements Trie, Cloneable {
 
     /**
      * @deprecated ne marche pas tres bien à évité
-     * @param hybride
-     * @return
+     * @param hybride Le Hybride-trie à fusionner
+     * @return le resultat de la fusion
      */
     public Hybride fusion(Hybride hybride) {
         if (hybride != null) {
