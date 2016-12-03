@@ -10,7 +10,8 @@ import java.util.List;
 
 /**
  * <b>ALGAV Project</b><br/>
- * Patricia Trie
+ * {@code Patricia Trie} : Classe encodant les primitives de base et les fonctions avancées ainsi que
+ * les fonctions complexes du devoir de programation
  *
  * @author <a href="mailto:aribyassine@gmail.com">Yassine ARIB</a>
  * @author <a href="mailto:meghari.aghiles@gmail.com">Aghiles MEGHARI</a>
@@ -24,8 +25,8 @@ public class Patricia implements Trie {
      */
     final static String finMot = "Ø";
     /**
-     * HashMap utilisé pour la structure de l'arbre
-     * Les clés sont des chaînes de caractère qui indexe les sous arbres
+     * HashMap utilisé pour la structure de l'arbre,
+     * Les clés sont des chaînes de caractère qui indexe les sous arbres,
      * on a fait le choix d'utiliser un Map car c’est une structure
      * particulièrement adapté pour représenter le noeud d’un Patricia-Trie,
      * cela dit notre implémentation ne respecte pas entièrement
@@ -47,13 +48,13 @@ public class Patricia implements Trie {
 
     /**
      * Fonction qui ajoute un mot dans le Patricia-trie<br/>
-     * <p>
+     * 
      * ->Principe :<br/>
-     * &emsp; On parcourt les valeurs du noeud, et pour chacun on regarde si il y’a un préfixe commun
+     * &emsp; On parcourt les valeurs du noeud, et pour chacune on regarde si il y’a un préfixe commun
      * entre le mot à ajouter et la valeur du noeud si c’est le cas on on continue récursivement
      * avec le mot à ajouter auquel on a enlevé le préfixe <code>mot.substring(longueur_prefixe)</code>,
      * sinon on ajoute le mot au noeud et on rajoute le caractère de fin de mot sur le sous arbre correspondant
-     * </p>
+     * 
      *
      * @param mot Le mot à ajouter dans le Patricia-trie
      */
@@ -103,14 +104,14 @@ public class Patricia implements Trie {
 
     /**
      * Fonction de recherche d’un mot dans le Patricia-trie<br/>
-     * <p>
+     * 
      * ->Principe :<br/>
      * &emsp;Cas terminal : Si le mot recherché est vide et que le noeud contient le caractère de fin de mot
      * on renvoie <code>true</code><br/>
      * &emsp;Cas générale : Si parmis les valeurs du noeud aucun n’est est préfixe du mot
      * recherché on renvoie <code>false</code> sinon on continue la recherche récursivement dans le sous arbre indexé
      * par le préfixe avec comme paramètre de recherche <code>mot.substring(longueur_prefixe)</code>
-     * </p>
+     * 
      *
      * @param mot Le mot à rechercher
      * @return Un boolean qui indique si le mot passé en paramètre figure dans le Patricia-trie
@@ -130,11 +131,11 @@ public class Patricia implements Trie {
 
     /**
      * Fonction qui compte les mots présents dans le Patricia-trie<br/>
-     * <p>
+     * 
      * ->Principe :<br/>
      * &emsp;On parcourt récursivement tous les noeuds de l’arbre, puis à chaque noeud contenant le caractère de fin de
      * mot, on incrémente le compteur.
-     * <p>
+     * 
      *
      * @return Le nombre de mots présents dans le Patricia-trie
      */
@@ -150,12 +151,12 @@ public class Patricia implements Trie {
 
     /**
      * Fonction qui liste les mots du Patricia-trie dans l’ordre alphabétique<br/>
-     * <p>
+     * 
      * ->Principe :<br/>
-     * &emsp;On parcourt les valeurs du noeud, et pour chacun on appelle la fonction <code>listeMotsRecursive()</code>
+     * &emsp;On parcourt les valeurs du noeud, et pour chacune on appelle la fonction <code>listeMotsRecursive()</code>
      * qui récupère récursivement la liste des mots dans le sous arbre correspondant puis on concatène
      * la valeur du noeud a la liste  des suffixe puis on retourne la liste triée par ordre alphabétique
-     * <p>
+     * 
      *
      * @return La liste des mots dans l’ordre alphabétique
      */
@@ -171,12 +172,12 @@ public class Patricia implements Trie {
 
     /**
      * Fonction qui compte les références vers null<br/>
-     * <p>
+     * 
      * ->Principe :<br/>
      * &emsp;Le nombre références vers null est toujour égale à 1 dans notre implémentation cela est dû au fait
      * qu'on utilise un HashMap pour stocker les valeurs du noeud d'un Patricia-trie, l'unique valeur null provient
      * de l'attribut <code>pere</code> de la racine de l'arbre
-     * <p>
+     * 
      *
      * @return Le nombre de références vers null
      */
@@ -187,11 +188,11 @@ public class Patricia implements Trie {
 
     /**
      * Fonction qui calcule la hauteur du Patricia-trie<br/>
-     * <p>
+     * 
      * ->Principe :<br/>
      * &emsp;Cas terminal: On renvoie 0 Si le noeud est vide<br/>
      * &emsp;Cas générale: On renvoie 1 + le maximum parmis les tailles des sous arbres
-     * <p>
+     * 
      *
      * @return La hauteur de l’arbre
      */
@@ -210,7 +211,7 @@ public class Patricia implements Trie {
 
     /**
      * Fonction qui calcule la profondeur moyenne des feuilles du Patricia-trie<br/>
-     * <p>
+     * 
      * ->Principe :<br/>
      * &emsp;On récupère récursivement la liste de toutes les feuilles puis on utilise la fonction
      * <code>longueurDeLaBranche()</code> qui calcule la longueur de la branche menant jusqu'à la feuille,
@@ -218,7 +219,7 @@ public class Patricia implements Trie {
      * et on obtient la profondeur Moyenne des feuilles<br/>
      * <small>La fonction <code>longueurDeLaBranche()</code> n’est pas récursive elle utilise
      * l'attribut <code>pere</code> pour remonter dans la hiérarchie </small>
-     * <p>
+     * 
      *
      * @return La profondeur moyenne des feuilles
      */
@@ -234,12 +235,12 @@ public class Patricia implements Trie {
     /**
      * Fonction qui prend un mot A en argument et qui indique
      * de combien de mots du Patricia-trie le mot A est préﬁxe<br/>
-     * <p>
+     * 
      * ->Principe :<br/>
      * &emsp;Cas terminal: Si le mot est vide on renvoie le compte des mots présents dans les sous arbre
      * grace à la fonction <code>comptageMots()</code><br/>
      * &emsp;Cas générale: On renvoie 1 + le maximum parmis les tailles des sous arbres
-     * <p>
+     * 
      * @param mot Préﬁxe a chercher
      * @return Le nombre de mots préfixé par le mot passé en paramètre
      */
@@ -256,9 +257,17 @@ public class Patricia implements Trie {
     }
 
     /**
-     * Fonction qui prend un mot en argument et qui
-     * le supprime du Patricia-trie s’il y ﬁgure
-     *
+     * Fonction qui prend un mot en argument et qui le supprime du Patricia-trie s’il y ﬁgure<br/>
+     * 
+     * ->Principe :<br/>
+     * &emsp;Cas terminal: Si le mot est vide et que le noeud contient le caractère de fin de mot, on le supprime
+     * du noeud et en renvoie {@code true}, {@code false} sinon<br/>
+     * &emsp;Cas générale: On parcourt les valeurs du noeud, et pour chacune des valeurs on regarde si elle est préfixe
+     * du mot à supprimer si c'est le cas on on continue récursivement avec le mot à supprimer auquel on a enlevé
+     * le préfixe {@code mot.substring(longueur_prefixe)} puis on test le retour de la fonction récursive
+     * si le mot a étais supprimer dans le sous arbre (l'appel récursif à renvoyer {@code true})
+     * on coupe les branches inutiles de l'arbre
+     * 
      * @param mot Le mot à supprimer
      * @return Un boolean qui indique si le mot à été trouvé et supprimé
      */
@@ -295,7 +304,11 @@ public class Patricia implements Trie {
      **********************************************************************************/
 
     /**
-     * Fonction qui calcule la largeur du Patricia-trie
+     * Fonction qui calcule la largeur du Patricia-trie "<small>utiliser pour l’affichage de l'arbre dans {@link projet.algav.FileTools}</small>"<br/>
+     * 
+     * ->Principe :<br/>
+     * &emsp; Le calcule de la largeur d'un Patricia-trie est équivalent au nombre de feuilles ou au nombre de mots,
+     * cette fonction ne fais que encapsuler un appel à la fonction {@code comptageMots()}
      *
      * @return La largeur de du Patricia-trie
      */
@@ -305,7 +318,10 @@ public class Patricia implements Trie {
     }
 
     /**
-     * Fonction qui indique si le Patricia-trie est vide ou non
+     * Fonction qui indique si le Patricia-trie est vide ou non<br/>
+     *
+     * ->Principe :<br/>
+     * &emsp; On vérifie si la racine de l'arbre est vide
      *
      * @return Un boolean indique si le Patricia-trie est vide
      */
@@ -316,9 +332,16 @@ public class Patricia implements Trie {
 
     /**
      * Fonction qui sérialise un arbre en un objet JSON qui est utilisé
-     * par un JavaScript pour un affichage intégrale du Patricia-trie.
-     * Affichage non interactif
+     * par un JavaScript pour un affichage intégrale du Patricia-trie<br/>
      *
+     * ->Principe :<br/>
+     * &emsp; La fonction utilise la librairie <a href="https://github.com/google/gson">{@code google-gson}</a>
+     * pour sérialiser un objet  Patricia en fichier JSON que l’on récupère ensuite via un script JS utilisant la
+     * librairie <a href="https://d3js.org/">{@code 3D.js}</a> pour afficher dans une page HTML une représentation
+     * complète de l’arbre<br/>
+     * <small>répertoire de sortie {@code out/JSON}</small>
+     *
+     * @see projet.algav.FileTools
      * @return Un JSON qui décrit le Patricia-trie
      */
     @Override
@@ -362,9 +385,17 @@ public class Patricia implements Trie {
 
     /**
      * Fonction qui sérialise un arbre en un objet JSON qui est utilisé
-     * par un JavaScript pour un affichage partiel du Patricia-trie.
-     * Affichage interactif
+     * par un JavaScript pour un affichage dans le quel on peut explorer
+     * toutes les parties du Patricia-trie en affichant ou en masquant une partie de l'arbre<br/>
      *
+     * ->Principe :<br/>
+     * &emsp; La fonction utilise la librairie <a href="https://github.com/google/gson">{@code google-gson}</a>
+     * pour sérialiser un objet  Patricia en fichier JSON que l’on récupère ensuite via un script JS utilisant la
+     * librairie <a href="https://d3js.org/">{@code 3D.js}</a> pour afficher dans une page HTML une représentation
+     * partiel et interactive de l’arbre<br/>
+     * <small>répertoire de sortie {@code out/JSON}</small>
+     *
+     * @see projet.algav.FileTools
      * @return Un JSON qui décrit le Patricia-trie
      */
     @Override
@@ -412,13 +443,52 @@ public class Patricia implements Trie {
         }
         return sb.toString();
     }
+
     /*****************************************************************************
      * Définitions des fonctions publique propre au Patricia-Trie                *
      *****************************************************************************/
+    /**
+     * Fonctions de conversion permettant de passer d’une structure de Patricia en Hybride<br/>
+     *
+     * ->Principe :<br/>
+     * &emsp; On commence par convertir les valeurs du noeud en un trie hybride avec la fonction
+     * {@code patriciaNodeToHybride(List<String> node)} puis on continue récursivement sur les sous arbres
+     * du  Patricia et on finit par ajouter l’arbre retourné par l’appel récursif à l’arbre final
+     *
+     * @see ConversionTools
+     * @return Un trie Hybride équivalent
+     */
+    public Hybride toHybride() {
+        List<String> node = valeursRacine();
+        Hybride res = ConversionTools.patriciaNodeToHybride(node);
+        if (res == null)
+            return null;
+        Hybride sousArbre;
+        for (String val : node) {
+            sousArbre = ConversionTools.getLastHybrideNode(res, val);
+            if (this.node.get(val).hasFinMot()) {
+                sousArbre.position = Hybride.cpt++;
+                if (this.node.get(val).node.size() == 1)
+                    continue;
+            }
+            sousArbre.eq = this.node.get(val).toHybride();
+            sousArbre.setPereDansFils();
+        }
+        return res;
+    }
 
     /**
-     * Fonction qui prend un Patricia-trie en argument et qui
-     * le fusionne avec this
+     * Fonction qui prend un Patricia-trie en argument et qui le fusionne avec courant<br/>
+     *
+     * ->Principe :<br/>
+     * &emsp; On parcourt les valeurs du noeud, et pour chacune des valeurs {@code (valeur_1)} on regarde si il existe
+     * un préfixe {@code (p)} commun avec les valeurs du deuxième arbre {@code (valeur_2)}
+     * on distingue 5 cas qui nécessite des traitements différents  :<br/>
+     * &emsp;{@code p == valeur_1 && p == valeur_2}<br/>
+     * &emsp;{@code p == valeur_1 && p est prefixe de valeur_2}<br/>
+     * &emsp;{@code p est prefixe de valeur_1 && p == valeur_2}<br/>
+     * &emsp;{@code p est prefixe de valeur_1 && p est prefixe de valeur_2}<br/>
+     * &emsp;{@code p == null}
      *
      * @param pt Le Patricia-trie à fusionner
      * @return le resultat de la fusion
@@ -573,26 +643,7 @@ public class Patricia implements Trie {
         return null;
     }
 
-    public Hybride toHybride() {
-        List<String> node = valeursRacine();
-        Hybride res = ConversionTools.patriciaNodeToHybride(node);
-        if (res == null)
-            return null;
-        Hybride sousArbre;
-        for (String val : node) {
-            sousArbre = ConversionTools.getLastHybrideNode(res, val);
-            if (this.node.get(val).hasFinMot()) {
-                sousArbre.position = Hybride.cpt++;
-                if (this.node.get(val).node.size() == 1)
-                    continue;
-            }
-            sousArbre.eq = this.node.get(val).toHybride();
-            sousArbre.setPereDansFils();
-        }
-        return res;
-    }
-
-    private List<String> ajouterPrefixe(String mot, List<String> list) {
+    private static List<String> ajouterPrefixe(String mot, List<String> list) {
         List<String> res = new ArrayList<>();
         for (String suffixe : list) {
             res.add(mot + suffixe);
