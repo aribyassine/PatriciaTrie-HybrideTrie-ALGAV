@@ -5,7 +5,7 @@ import projet.algav.trie.Trie;
 import java.io.*;
 
 public class FileTools {
-    private static final String dossier = "out/";
+    private static final String dossier = "affichage/";
     private static final String dossierJSON = "JSON/";
 
     public static boolean addWordsFromFile(Trie trie, String path) {

@@ -104,5 +104,13 @@ public interface Trie {
      * sous forme d’une chaîne de caractères
      * @return une représentation de l’arbre
      */
+    @Override
     String toString();
+
+    /**
+     * Fonction qui fait une copie attribut par attribut d'un Trie
+     *
+     * @return un clone du Trie courant
+     */
+    Object clone();
 }

@@ -2,6 +2,7 @@ package projet.algav.trie;
 
 import com.google.gson.*;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,8 +19,7 @@ import java.util.List;
  * @version 1.0
  * @see <a href="https://github.com/aribyassine/projet-ALGAV">Code source sur GitHub</a>
  */
-
-public class Patricia implements Trie {
+public class Patricia implements Trie, Cloneable, Serializable {
     /**
      * caractère utilisé pour indiquer la ﬁn d’un mot.
      */
@@ -297,6 +297,22 @@ public class Patricia implements Trie {
                 }
         }
         return false;
+    }
+
+    /**
+     * Fonction qui fait une copie attribut par attribut d'un Patricia-Trie
+     *
+     * @return un clone du Patricia-Trie courant
+     */
+    @Override
+    public Object clone(){
+        Patricia clone = new Patricia();
+        for (String cle:node.keySet()){
+            Patricia cloneSousArbre = (Patricia) node.get(cle).clone();
+            cloneSousArbre.setPere(clone);
+            clone.node.put(cle,cloneSousArbre);
+        }
+        return clone;
     }
 
     /**********************************************************************************

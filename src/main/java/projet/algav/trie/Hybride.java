@@ -2,11 +2,12 @@ package projet.algav.trie;
 
 import com.google.gson.*;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hybride implements Trie, Cloneable {
+public class Hybride implements Trie, Cloneable, Serializable{
     private static final char motVide = 'Ø';
     static int cpt = 0;
     int position = 0;
@@ -352,9 +353,61 @@ public class Hybride implements Trie, Cloneable {
     }
 
     /**
-     * @deprecated ne marche pas tres bien à évité
+     * Fonction qui fait une copie attribut par attribut d'un Hybride-Trie
+     *
+     * @return un clone de l'Hybride-Trie courant
+     */
+    @Override
+    public Object clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        Hybride hybride = new Hybride();
+        hybride.valeur = this.valeur;
+        hybride.position = this.position;
+        if (eq != null)
+            hybride.eq = (Hybride) this.eq.clone();
+        if (inf != null)
+            hybride.inf = (Hybride) this.inf.clone();
+        if (sup != null)
+            hybride.sup = (Hybride) this.sup.clone();
+        if (pere != null)
+            hybride.pere = (Hybride) this.pere.clone();
+
+        return hybride;
+    }
+
+    @Override
+    public String toString() {
+        int lb = this.longueurDeLabranche();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < lb; i++) {
+            sb.append("|\t");
+        }
+        sb.append(valeur).append(position != 0 ? "," + position : "  ").append("\n");
+        Hybride[] fils = getSousArbres();
+        for (Hybride h : fils) {
+            if (h == null) {
+                for (int i = 0; i < lb + 1; i++) {
+                    sb.append("|\t");
+                }
+                sb.append("∅\n");
+            } else
+                sb.append(h.toString());
+        }
+        return sb.toString();
+    }
+
+    public Patricia toPatricia() {
+        return null;
+    }
+
+    /**
      * @param hybride Le Hybride-trie à fusionner
      * @return le resultat de la fusion
+     * @deprecated ne marche pas tres bien à évité
      */
     public Hybride fusion(Hybride hybride) {
         if (hybride != null) {
@@ -411,6 +464,14 @@ public class Hybride implements Trie, Cloneable {
         return this;
     }
 
+    public void ajouterMotPuisEquilibre(String mot) {
+        if (mot != null && !mot.isEmpty()) {
+            this.ajouter(mot);
+            if (!isEquilibre())
+                this.equilibre();
+        }
+    }
+
     private void initialisationClone(Hybride hybride) {
         this.valeur = hybride.valeur;
         this.position = hybride.position;
@@ -427,29 +488,6 @@ public class Hybride implements Trie, Cloneable {
         this.inf = hybride.inf;
         this.sup = hybride.sup;
     }
-
-    @Override
-    public Object clone() {
-        try {
-            super.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        Hybride hybride = new Hybride();
-        hybride.valeur = this.valeur;
-        hybride.position = this.position;
-        if (eq != null)
-            hybride.eq = (Hybride) this.eq.clone();
-        if (inf != null)
-            hybride.inf = (Hybride) this.inf.clone();
-        if (sup != null)
-            hybride.sup = (Hybride) this.sup.clone();
-        if (pere != null)
-            hybride.pere = (Hybride) this.pere.clone();
-
-        return hybride;
-    }
-
 
     private boolean isLeaf() {
         boolean videEq = true;
@@ -585,51 +623,18 @@ public class Hybride implements Trie, Cloneable {
         this.initialisation(h2);
     }
 
-    public void ajouterMotPuisEquilibre(String mot) {
-        if (mot != null && !mot.isEmpty()) {
-            this.ajouter(mot);
-            if( !isEquilibre() )
-                this.equilibre();
-        }
-    }
+    private boolean isEquilibre() {
+        if (this.eq != null && this.sup != null && this.inf != null) {
+            int hauteur_inf = (this.inf == null) ? 0 : this.inf.hauteur();
+            int hauteur_eq = (this.eq == null) ? 0 : this.eq.hauteur();
+            int hauteur_sup = (this.sup == null) ? 0 : this.sup.hauteur();
 
-    public boolean isEquilibre() {
-        if(this.eq !=null && this.sup!=null && this.inf !=null){
-            int hauteur_inf = (this.inf==null)? 0 : this.inf.hauteur();
-            int hauteur_eq = (this.eq==null)? 0 : this.eq.hauteur();
-            int hauteur_sup = (this.sup==null)? 0 : this.sup.hauteur();
-
-            if( Math.abs(hauteur_inf-hauteur_eq)<=2
-                    && Math.abs(hauteur_inf-hauteur_sup) <=2
-                    && Math.abs( hauteur_eq - hauteur_sup ) <=2 ){
+            if (Math.abs(hauteur_inf - hauteur_eq) <= 2
+                    && Math.abs(hauteur_inf - hauteur_sup) <= 2
+                    && Math.abs(hauteur_eq - hauteur_sup) <= 2) {
                 return true;
             }
         }
         return false;
-    }
-
-    public Patricia toPatricia(){
-        return null;
-    }
-
-    @Override
-    public String toString() {
-        int lb = this.longueurDeLabranche();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < lb; i++) {
-            sb.append("|\t");
-        }
-        sb.append(valeur).append(position != 0 ? "," + position : "  ").append("\n");
-        Hybride[] fils = getSousArbres();
-        for (Hybride h : fils) {
-            if (h == null) {
-                for (int i = 0; i < lb + 1; i++) {
-                    sb.append("|\t");
-                }
-                sb.append("∅\n");
-            } else
-                sb.append(h.toString());
-        }
-        return sb.toString();
     }
 }
