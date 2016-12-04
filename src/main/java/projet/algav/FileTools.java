@@ -45,7 +45,7 @@ public class FileTools {
         }
     }
 
-    private static void write(String fileName, String arg) throws IOException {
+    public static void write(String fileName, String arg) throws IOException {
         Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName), "utf-8"));
         writer.write(arg);
         writer.close();

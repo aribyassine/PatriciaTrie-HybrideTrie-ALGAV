@@ -1,17 +1,9 @@
 package projet.algav;
 
-import org.openjdk.jmh.results.format.ResultFormatType;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.openjdk.jmh.runner.options.TimeValue;
 import projet.algav.trie.Hybride;
 import projet.algav.trie.Patricia;
 
-import java.projet.algav.trie.PatriciaBenchmark;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Hello world!
@@ -25,22 +17,6 @@ public class App {
         String[] tab2 = exemple.split(" ");
         String[] tab3 = {"aa", "ab", "ba", "bb", "ca", "cb"};
 
-        Options opt = new OptionsBuilder()
-                .include(PatriciaBenchmark.class.getName())
-                .measurementIterations(2)
-                .measurementTime(TimeValue.milliseconds(50))
-                .warmupIterations(2)
-                .warmupTime(TimeValue.milliseconds(50))
-                .timeUnit(TimeUnit.MILLISECONDS)
-                .forks(1)
-                .resultFormat(ResultFormatType.JSON)
-                .result("result.json")
-                .build();
-        try {
-            new Runner(opt).run();
-        } catch (RunnerException e) {
-            e.printStackTrace();
-        }
         ArrayList<String> list1 = new ArrayList<>();
         ArrayList<String> list2 = new ArrayList<>();
         ArrayList<String> list3 = new ArrayList<>();
