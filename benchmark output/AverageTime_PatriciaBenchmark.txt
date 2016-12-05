@@ -1,0 +1,5 @@
+Result: 1747,501 �(99.9%) 40,990 ms/op [Average]
+  Statistics: (min, avg, max) = (1695,724, 1747,501, 1830,861), stdev = 47,204
+  Confidence interval (99.9%): [1706,511, 1788,491]
+  Samples, N = 20
+        mean =   1747,501 �(99.9%) 40,990 ms/op

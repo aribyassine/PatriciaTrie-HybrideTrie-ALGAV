@@ -480,12 +480,45 @@ public class Hybride implements Trie, Cloneable, Serializable {
         return this;
     }
 
+    public Patricia toPatricia() {
+        Patricia p = new Patricia();
+        if (this.estVide())
+            return p;
+        else {
+            List<String> patriciaNode = this.getPatriciaNode();
+            ArrayList<Hybride> sousArbres = new ArrayList<>();
+            for (String cle : patriciaNode)
+                sousArbres.add(getSubHybride(cle));
+            for (int i = 0; i < sousArbres.size(); i++) {
+                Hybride h = sousArbres.get(i);
+                if (h != null) {
+                    if (h.eq != null)
+                        p.ajouterCleValeur(patriciaNode.get(i), h.eq.toPatricia());
+                    else
+                        p.ajouterCleValeur(patriciaNode.get(i), new Patricia());
+                    if (h.position != 0)
+                        p.node.get(patriciaNode.get(i)).ajouterCleValeur(Patricia.finMot, new Patricia());
+                }
+            }
+        }
+        return p;
+    }
+
     public void ajouterMotPuisEquilibre(String mot) {
         if (mot != null && !mot.isEmpty()) {
             this.ajouter(mot);
             if (!isEquilibre())
                 this.equilibre();
         }
+    }
+
+    void setPereDansFils() {
+        if (eq != null)
+            eq.pere = this;
+        if (inf != null)
+            inf.pere = this;
+        if (sup != null)
+            sup.pere = this;
     }
 
     private void initialisationClone(Hybride hybride) {
@@ -561,15 +594,6 @@ public class Hybride implements Trie, Cloneable, Serializable {
                 }
             }
         }
-    }
-
-    void setPereDansFils() {
-        if (eq != null)
-            eq.pere = this;
-        if (inf != null)
-            inf.pere = this;
-        if (sup != null)
-            sup.pere = this;
     }
 
     private void equilibre() {
@@ -651,30 +675,6 @@ public class Hybride implements Trie, Cloneable, Serializable {
         return false;
     }
 
-    public Patricia toPatricia() {
-        Patricia p = new Patricia();
-        if (this.estVide())
-            return p;
-        else {
-            List<String> patriciaNode = this.getPatriciaNode();
-            ArrayList<Hybride> sousArbres = new ArrayList<>();
-            for (String cle : patriciaNode)
-                sousArbres.add(getSubHybride(cle));
-            for (int i = 0; i < sousArbres.size(); i++) {
-                Hybride h = sousArbres.get(i);
-                if (h != null) {
-                    if (h.eq != null)
-                        p.ajouterCleValeur(patriciaNode.get(i), h.eq.toPatricia());
-                    else
-                        p.ajouterCleValeur(patriciaNode.get(i), new Patricia());
-                    if (h.position != 0)
-                        p.node.get(patriciaNode.get(i)).ajouterCleValeur(Patricia.finMot, new Patricia());
-                }
-            }
-        }
-        return p;
-    }
-
     private List<String> getPatriciaNode() {
         List<String> listMotsRacine = new ArrayList<>();
         listMotsRacine.add(this.getEqPrefixe());
@@ -703,7 +703,7 @@ public class Hybride implements Trie, Cloneable, Serializable {
         return sb.toString();
     }
 
-    public Hybride getSubHybride(String mot) {
+    private Hybride getSubHybride(String mot) {
         if (mot.isEmpty() || this.estVide())
             return null;
         if (mot.length() == 1) {

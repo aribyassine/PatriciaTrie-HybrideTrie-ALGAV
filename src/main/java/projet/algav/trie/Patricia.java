@@ -593,6 +593,11 @@ public class Patricia implements Trie, Cloneable, Serializable {
         return new ArrayList<>();
     }
 
+    void ajouterCleValeur(String cle, Patricia valeur) {
+        valeur.pere = this;
+        this.node.put(cle, valeur);
+    }
+
     private ArrayList<StringBuilder> listeMotsRecursive() {
         ArrayList<StringBuilder> res = new ArrayList<>();
         for (String s : node.keySet()) {
@@ -643,11 +648,6 @@ public class Patricia implements Trie, Cloneable, Serializable {
         for (Patricia pt : node.values())
             alpt.addAll(pt.getFeuilles());
         return alpt;
-    }
-
-    void ajouterCleValeur(String cle, Patricia valeur) {
-        valeur.pere = this;
-        this.node.put(cle, valeur);
     }
 
     private static String prefixCommun(String s, Patricia p) {
