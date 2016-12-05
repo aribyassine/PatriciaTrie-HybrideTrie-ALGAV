@@ -645,7 +645,7 @@ public class Patricia implements Trie, Cloneable, Serializable {
         return alpt;
     }
 
-    private void ajouterCleValeur(String cle, Patricia valeur) {
+    void ajouterCleValeur(String cle, Patricia valeur) {
         valeur.pere = this;
         this.node.put(cle, valeur);
     }

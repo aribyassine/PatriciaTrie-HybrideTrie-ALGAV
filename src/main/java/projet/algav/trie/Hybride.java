@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hybride implements Trie, Cloneable, Serializable{
+public class Hybride implements Trie, Cloneable, Serializable {
     private static final char motVide = 'Ø';
     static int cpt = 0;
     int position = 0;
@@ -78,7 +78,10 @@ public class Hybride implements Trie, Cloneable, Serializable{
             if (sup != null)
                 if (mot.charAt(0) == sup.valeur && sup.position != 0)
                     return true;
-            return false;
+            if (mot.charAt(0) < valeur)
+                return inf != null && inf.recherche(mot);
+            if (mot.charAt(0) > valeur)
+                return sup != null && sup.recherche(mot);
         } else {
             char p = mot.charAt(0);
             if (p == valeur) {
@@ -380,6 +383,23 @@ public class Hybride implements Trie, Cloneable, Serializable{
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+        if (o instanceof Hybride) {
+            boolean res = true;
+            if (valeur == ((Hybride) o).valeur && position == ((Hybride) o).position) {
+                Hybride[] sa = getSousArbres();
+                for (int i = 0; i < sa.length; i++) {
+                    res = res && sa[i] != null ? sa[i].equals(((Hybride) o).getSousArbres()[i]) : ((Hybride) o).getSousArbres()[i] == null;
+                }
+                return res;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         int lb = this.longueurDeLabranche();
         StringBuilder sb = new StringBuilder();
@@ -398,10 +418,6 @@ public class Hybride implements Trie, Cloneable, Serializable{
                 sb.append(h.toString());
         }
         return sb.toString();
-    }
-
-    public Patricia toPatricia() {
-        return null;
     }
 
     /**
@@ -474,7 +490,6 @@ public class Hybride implements Trie, Cloneable, Serializable{
 
     private void initialisationClone(Hybride hybride) {
         this.valeur = hybride.valeur;
-        this.position = hybride.position;
         this.pere = (Hybride) hybride.pere.clone();
         this.eq = (Hybride) hybride.eq.clone();
         this.inf = (Hybride) hybride.inf.clone();
@@ -558,22 +573,16 @@ public class Hybride implements Trie, Cloneable, Serializable{
     }
 
     private void equilibre() {
-        if (this.inf != null)
-            this.inf.equilibre();
-        if (this.sup != null)
-            this.sup.equilibre();
-        if (this.eq != null)
-            this.eq.equilibre();
-
         int hauteurInf = this.inf == null ? 0 : this.inf.hauteur();
         int hauteurSup = this.sup == null ? 0 : this.sup.hauteur();
 
         if (hauteurInf - hauteurSup >= 2) {
-
             int hauteurInfSup = (this.inf.sup == null) ? 0 : this.inf.sup.hauteur();
             int hauteurInfInf = (this.inf.inf == null) ? 0 : this.inf.inf.hauteur();
             if (hauteurInfSup - hauteurInfInf >= 2)
                 this.inf.rotationGauche();
+            else if (hauteurInfSup - hauteurInfInf <= -2)
+                this.inf.rotationDroite();
             this.rotationDroite();
 
         } else if (hauteurInf - hauteurSup <= -2) {
@@ -581,6 +590,8 @@ public class Hybride implements Trie, Cloneable, Serializable{
             int hauteurSupSup = (this.sup.sup == null) ? 0 : this.sup.sup.hauteur();
             if (hauteurSupInf - hauteurSupSup >= 2)
                 this.sup.rotationDroite();
+            else if (hauteurSupInf - hauteurSupSup <= -2)
+                this.sup.rotationGauche();
             this.rotationGauche();
         }
     }
@@ -588,34 +599,43 @@ public class Hybride implements Trie, Cloneable, Serializable{
     private void rotationGauche() {
         Hybride h = new Hybride(this);
         if (this.sup == null)
-            this.sup = new Hybride(this);
+            this.sup = new Hybride();
         h.valeur = this.valeur;
+        if (this != null)
+            h.position = this.position;
         h.eq = this.eq;
         h.inf = this.inf;
         h.sup = this.sup.inf;
         Hybride h2 = new Hybride(this);
         if (this.sup == null)
-            this.sup = new Hybride(this);
+            this.sup = new Hybride();
         h2.valeur = this.sup.valeur;
+        if (this.sup != null)
+            h2.position = this.sup.position;
         h2.eq = this.sup.eq;
         h2.inf = h;
         h2.sup = this.sup.sup;
 
         this.initialisation(h2);
+
     }
 
     private void rotationDroite() {
         Hybride h = new Hybride(this);
         h.valeur = this.valeur;
         if (this.inf == null)
-            this.inf = new Hybride(this);
+            this.inf = new Hybride();
+        if (this != null)
+            h.position = this.position;
         h.eq = this.eq;
         h.inf = this.inf.sup;
         h.sup = this.sup;
         Hybride h2 = new Hybride(this);
         if (this.inf == null)
-            this.inf = new Hybride(this);
+            this.inf = new Hybride();
         h2.valeur = this.inf.valeur;
+        if (this.inf != null)
+            h2.position = this.inf.position;
         h2.eq = this.inf.eq;
         h2.inf = this.inf.inf;
         h2.sup = h;
@@ -624,17 +644,93 @@ public class Hybride implements Trie, Cloneable, Serializable{
     }
 
     private boolean isEquilibre() {
-        if (this.eq != null && this.sup != null && this.inf != null) {
-            int hauteur_inf = (this.inf == null) ? 0 : this.inf.hauteur();
-            int hauteur_eq = (this.eq == null) ? 0 : this.eq.hauteur();
-            int hauteur_sup = (this.sup == null) ? 0 : this.sup.hauteur();
+        int hauteur_inf = (this.inf == null) ? 0 : this.inf.hauteur();
+        int hauteur_sup = (this.sup == null) ? 0 : this.sup.hauteur();
+        if (Math.abs(hauteur_inf - hauteur_sup) <= 2)
+            return true;
+        return false;
+    }
 
-            if (Math.abs(hauteur_inf - hauteur_eq) <= 2
-                    && Math.abs(hauteur_inf - hauteur_sup) <= 2
-                    && Math.abs(hauteur_eq - hauteur_sup) <= 2) {
-                return true;
+    public Patricia toPatricia() {
+        Patricia p = new Patricia();
+        if (this.estVide())
+            return p;
+        else {
+            List<String> patriciaNode = this.getPatriciaNode();
+            ArrayList<Hybride> sousArbres = new ArrayList<>();
+            for (String cle : patriciaNode)
+                sousArbres.add(getSubHybride(cle));
+            for (int i = 0; i < sousArbres.size(); i++) {
+                Hybride h = sousArbres.get(i);
+                if (h != null) {
+                    if (h.eq != null)
+                        p.ajouterCleValeur(patriciaNode.get(i), h.eq.toPatricia());
+                    else
+                        p.ajouterCleValeur(patriciaNode.get(i), new Patricia());
+                    if (h.position != 0)
+                        p.node.get(patriciaNode.get(i)).ajouterCleValeur(Patricia.finMot, new Patricia());
+                }
             }
         }
-        return false;
+        return p;
+    }
+
+    private List<String> getPatriciaNode() {
+        List<String> listMotsRacine = new ArrayList<>();
+        listMotsRacine.add(this.getEqPrefixe());
+        if (this.inf != null)
+            listMotsRacine.addAll(this.inf.getPatriciaNode());
+
+        if (this.sup != null)
+            listMotsRacine.addAll(this.sup.getPatriciaNode());
+
+        return listMotsRacine;
+    }
+
+    private String getEqPrefixe() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.valeur);
+        if (this.eq != null && this.position == 0) {
+            Hybride tmp = this.eq;
+            if (tmp.sup == null && tmp.inf == null)
+                sb.append(tmp.valeur);
+            while (tmp.sup == null && tmp.inf == null && tmp.eq != null && tmp.position == 0) {
+                if (tmp.eq.sup == null && tmp.eq.inf == null)
+                    sb.append(tmp.eq.valeur);
+                tmp = tmp.eq;
+            }
+        }
+        return sb.toString();
+    }
+
+    public Hybride getSubHybride(String mot) {
+        if (mot.isEmpty() || this.estVide())
+            return null;
+        if (mot.length() == 1) {
+            if (mot.charAt(0) == this.valeur)
+                return this;
+            if (inf != null)
+                if (mot.charAt(0) == inf.valeur)
+                    return this.inf;
+            if (sup != null)
+                if (mot.charAt(0) == sup.valeur)
+                    return this.sup;
+            if (mot.charAt(0) < valeur)
+                return inf != null ? inf.getSubHybride(mot) : null;
+            if (mot.charAt(0) > valeur)
+                return sup != null ? sup.getSubHybride(mot) : null;
+        } else {
+            char p = mot.charAt(0);
+            if (p == valeur) {
+                return eq != null ? eq.getSubHybride(mot.substring(1)) : null;
+            }
+            if (p < valeur) {
+                return inf != null ? inf.getSubHybride(mot) : null;
+            }
+            if (p > valeur) {
+                return sup != null ? sup.getSubHybride(mot) : null;
+            }
+        }
+        return null;
     }
 }
