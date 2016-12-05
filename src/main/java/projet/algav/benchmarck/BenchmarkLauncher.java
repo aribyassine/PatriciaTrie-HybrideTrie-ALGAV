@@ -18,13 +18,15 @@ public class BenchmarkLauncher {
     public static void runSingleShotTimeBenchmark(String className,String csvName,int nbIteration){
         Options optP = new OptionsBuilder()
                 .include(className)
-                .warmupIterations(nbIteration)
                 .measurementIterations(nbIteration)
-                .timeUnit(TimeUnit.MICROSECONDS)
-                .mode(Mode.SingleShotTime)
+                .warmupIterations(nbIteration)
+                .measurementTime(TimeValue.milliseconds(100))
+                .warmupTime(TimeValue.milliseconds(100))
+                .timeUnit(TimeUnit.NANOSECONDS)
+                .mode(Mode.AverageTime)
                 .forks(1)
                 .resultFormat(ResultFormatType.CSV)
-                .result("benchmark output/SingleShotTime"+csvName+"_ajout_liste_mot.csv")
+                .result("benchmark output/"+csvName+"supprimer_un_mot.csv")
                 .build();
         try {
             new Runner(optP).run();
@@ -35,7 +37,7 @@ public class BenchmarkLauncher {
     public static void runAverageTimeBenchmark(String className,String csvName){
         Options opt = new OptionsBuilder()
                 .include(className)
-                .timeUnit(TimeUnit.MILLISECONDS)
+                .timeUnit(TimeUnit.MICROSECONDS)
                 .warmupIterations(10)
                 .resultFormat(ResultFormatType.CSV)
                 .result("benchmark output/AverageTime_"+csvName+".csv")
@@ -47,7 +49,7 @@ public class BenchmarkLauncher {
         }
     }
     public static void main(String[] args) {
-        runSingleShotTimeBenchmark(HybrideBenchmark.class.getName(),HybrideBenchmark.class.getSimpleName(),20);
-        runSingleShotTimeBenchmark(PatriciaBenchmark.class.getName(),PatriciaBenchmark.class.getSimpleName(),20);
+        runSingleShotTimeBenchmark(HybrideBenchmark.class.getName(),HybrideBenchmark.class.getSimpleName(),10);
+        runSingleShotTimeBenchmark(PatriciaBenchmark.class.getName(),PatriciaBenchmark.class.getSimpleName(),10);
     }
 }

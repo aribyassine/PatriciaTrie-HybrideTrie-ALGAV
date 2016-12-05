@@ -1,2 +1,0 @@
-"Benchmark","Mode","Threads","Samples","Score","Score Error (99,9%)","Unit"
-"projet.algav.benchmarck.trie.Patricia.PatriciaBenchmark.benchmark_ajouter_tout_les_mots","ss",1,"20,000000","1747,501","40,990","ms/op"

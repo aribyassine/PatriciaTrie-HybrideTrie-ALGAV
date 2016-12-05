@@ -10,8 +10,34 @@ import java.util.List;
 
 @State(Scope.Benchmark)
 public class AllWordsBenchmarkContainer {
-    @Param({"dernière", "construction", "structures", "afficher", "successifs"})
-    public String[] motQuiNExistePasEnAnglais;
+    //@Param({"projet ", "algorithmique", "chronophage", "amusant","ils","lui","anticonstitutionnellement","universite","pierre","marie","curie"})
+    public String motQuiNExistePasEnAnglais;
+    /*    @Param({"projet ",
+                "algorithmique",
+                "chronophage",
+                "amusant",
+                "ils",
+                "lui",
+                "anticonstitutionnellement",
+                "universite",
+                "pierre",
+                "marie",
+                "curie",
+                "enemy",
+                "queen",
+                "margaret",
+                "then",
+                "you",
+                "belike",
+                "suspect",
+                "these",
+                "noblemen",
+                "as"
+        })*/
+    public String motAChercher;
+    @Param({"question", "archbishop", "of", "york", "then", "take", "my", "lord", "of", "westmoreland", "this", "schedule", "for", "this", "contains", "our", "general", "grievances", "each", "several", "article", "herein", "redress"})
+    public String motASupprimer;
+    public String[] motsASupprimer = {"question", "archbishop", "of", "york", "then", "take", "my", "lord", "of", "westmoreland", "this", "schedule", "for", "this", "contains", "our", "general", "grievances", "each", "several", "article", "herein", "redress"};
     List<String> list;
     public Iterator<String> iterator;
 
@@ -31,20 +57,31 @@ public class AllWordsBenchmarkContainer {
     public Patricia patricia;
     public Hybride hybride;
 
+
     @Setup(Level.Trial)
     public void init() {
         list = Shakespeare.shakespeareFileToArray("Shakespeare/merge.txt");
         iterator = list.iterator();
         patricia = new Patricia();
-        hybride=new Hybride();
+        hybride = new Hybride();
         for (String mot : list) {
             patricia.ajouter(mot);
             hybride.ajouter(mot);
         }
     }
+
+    @Setup(Level.Invocation)
+    public void initIter() {
+        patricia.ajouter(motASupprimer);
+        hybride.ajouter(motASupprimer);
+    }
+
     @TearDown(Level.Trial)
     public void fin() {
-        System.out.println("\n"+patricia.comptageMots());
+        System.out.println("\n" + patricia.comptageMots());
         System.out.println(hybride.comptageMots());
+        iterator = list.iterator();
+        patricia = new Patricia();
+        hybride = new Hybride();
     }
 }

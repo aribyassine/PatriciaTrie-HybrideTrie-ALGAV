@@ -33,9 +33,6 @@ public class Shakespeare {
         }
     }
 
-    public static void main(String[] args) {
-    }
-
     public static List<String> listFilesForShakespeareFolder() {
         String path ="Shakespeare/";
         File folder = new File(path);
