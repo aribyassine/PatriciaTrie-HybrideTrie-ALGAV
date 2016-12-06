@@ -469,7 +469,7 @@ public class Patricia implements Trie, Cloneable, Serializable {
      * ->Principe :<br/>
      * &emsp; On commence par convertir les valeurs du noeud en un trie hybride avec la fonction
      * {@code patriciaNodeToHybride(List<String> node)} puis on continue récursivement sur les sous arbres
-     * du  Patricia et on finit par ajouter l’arbre retourné par l’appel récursif à l’arbre final
+     * du Patricia et on finit par ajouter l’arbre retourné par l’appel récursif à l’arbre final
      *
      * @see ConversionTools
      * @return Un trie Hybride équivalent

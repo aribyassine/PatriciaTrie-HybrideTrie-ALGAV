@@ -31,11 +31,11 @@ public class HybrideBenchmark {
             wc.hybride.supprimer(s);
 
     }
-    @Benchmark
     public void benchmark_supprimer_un_mot(AllWordsBenchmarkContainer wc) {
         wc.hybride.supprimer(wc.motASupprimer);
     }
 
+    @Benchmark
     public void benchmark_ajouter_unmotQuiNExistePasEnAnglais(AllWordsBenchmarkContainer wc) {
         wc.hybride.ajouter(wc.motQuiNExistePasEnAnglais);
     }

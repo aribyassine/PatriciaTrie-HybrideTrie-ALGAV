@@ -10,7 +10,7 @@ import java.util.List;
 
 @State(Scope.Benchmark)
 public class AllWordsBenchmarkContainer {
-    //@Param({"projet ", "algorithmique", "chronophage", "amusant","ils","lui","anticonstitutionnellement","universite","pierre","marie","curie"})
+    @Param({"projet ", "algorithmique", "chronophage", "amusant","ils","lui","anticonstitutionnellement","universite","pierre","marie","curie"})
     public String motQuiNExistePasEnAnglais;
     /*    @Param({"projet ",
                 "algorithmique",
@@ -35,7 +35,7 @@ public class AllWordsBenchmarkContainer {
                 "as"
         })*/
     public String motAChercher;
-    @Param({"question", "archbishop", "of", "york", "then", "take", "my", "lord", "of", "westmoreland", "this", "schedule", "for", "this", "contains", "our", "general", "grievances", "each", "several", "article", "herein", "redress"})
+    //@Param({"question", "archbishop", "of", "york", "then", "take", "my", "lord", "of", "westmoreland", "this", "schedule", "for", "this", "contains", "our", "general", "grievances", "each", "several", "article", "herein", "redress"})
     public String motASupprimer;
     public String[] motsASupprimer = {"question", "archbishop", "of", "york", "then", "take", "my", "lord", "of", "westmoreland", "this", "schedule", "for", "this", "contains", "our", "general", "grievances", "each", "several", "article", "herein", "redress"};
     List<String> list;
@@ -72,8 +72,8 @@ public class AllWordsBenchmarkContainer {
 
     @Setup(Level.Invocation)
     public void initIter() {
-        patricia.ajouter(motASupprimer);
-        hybride.ajouter(motASupprimer);
+        patricia.supprimer(motQuiNExistePasEnAnglais);
+        hybride.supprimer(motQuiNExistePasEnAnglais);
     }
 
     @TearDown(Level.Trial)

@@ -30,7 +30,7 @@ public class App {
         for (String s : tab3)
             list3.add(s);
 
-        //list1 = Shakespeare.shakespeareFileToArray("Shakespeare/comedy_errors.txt");
+        list1 = Shakespeare.shakespeareFileToArray("Shakespeare/merge.txt");
         Patricia p = new Patricia();
         Hybride h = new Hybride();
         Hybride he = new Hybride();

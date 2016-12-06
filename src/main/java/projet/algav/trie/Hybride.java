@@ -113,6 +113,39 @@ public class Hybride implements Trie, Cloneable, Serializable {
     }
 
     @Override
+    public List<String> listeMots() {
+        List<String> mots = new ArrayList<>();
+        String val = String.valueOf(valeur);
+        if (inf != null)
+            mots.addAll(inf.listeMots());
+        if (position != 0)
+            mots.add(val);
+        if (eq != null)
+            mots.addAll(ajouterPrefixe(val, eq.listeMots()));
+        if (sup != null)
+            mots.addAll(sup.listeMots());
+        return mots;
+    }
+
+    @Override
+    public int comptageNil() {
+        int nbNils = 0;
+        if (eq != null)
+            nbNils += eq.comptageNil();
+        else
+            nbNils++;
+        if (inf != null)
+            nbNils += inf.comptageNil();
+        else
+            nbNils++;
+        if (sup != null)
+            nbNils += sup.comptageNil();
+        else
+            nbNils++;
+        return nbNils;
+    }
+
+    @Override
     public JsonElement toNotCollapsibleJSON() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         JsonSerializer<Hybride> serializer = new JsonSerializer<Hybride>() {
@@ -194,39 +227,6 @@ public class Hybride implements Trie, Cloneable, Serializable {
     }
 
     @Override
-    public List<String> listeMots() {
-        List<String> mots = new ArrayList<>();
-        String val = String.valueOf(valeur);
-        if (inf != null)
-            mots.addAll(inf.listeMots());
-        if (position != 0)
-            mots.add(val);
-        if (eq != null)
-            mots.addAll(ajouterPrefixe(val, eq.listeMots()));
-        if (sup != null)
-            mots.addAll(sup.listeMots());
-        return mots;
-    }
-
-    @Override
-    public int comptageNil() {
-        int nbNils = 0;
-        if (eq != null)
-            nbNils += eq.comptageNil();
-        else
-            nbNils++;
-        if (inf != null)
-            nbNils += inf.comptageNil();
-        else
-            nbNils++;
-        if (sup != null)
-            nbNils += sup.comptageNil();
-        else
-            nbNils++;
-        return nbNils;
-    }
-
-    @Override
     public int hauteur() {
         int infH = 0, supH = 0, eqH = 0;
         if (this.estVide())
@@ -286,42 +286,44 @@ public class Hybride implements Trie, Cloneable, Serializable {
 
     @Override
     public int prefixe(String mot) {
-        int nbPrefixe = 0;
         if (mot.isEmpty() || this.estVide())
             return 0;
+        char premier = mot.charAt(0);
         if (mot.length() == 1) {
-            if (mot.charAt(0) == this.valeur) {
-                if (position != 0)
-                    return eq.comptageMots() + 1;
-                return eq.comptageMots();
+            if (premier == this.valeur) {
+                if (eq != null)
+                    if (position != 0)
+                        return eq.comptageMots() + 1;
+                    else
+                        return eq.comptageMots();
+            } else if (premier < valeur) {
+                if (inf != null)
+                    return inf.prefixe(mot);
+            } else if (premier > valeur) {
+                if (sup != null)
+                    return sup.prefixe(mot);
             }
-            if (inf != null)
-                if (inf.eq != null)
-                    if (mot.charAt(0) == inf.valeur)
-                        return inf.eq.comptageMots();
-
-            if (sup != null)
-                if (sup.eq != null)
-                    if (mot.charAt(0) == sup.valeur)
-                        return sup.eq.comptageMots();
-
         } else {
-            if (inf != null)
-                nbPrefixe += inf.prefixe(mot);
-            if (eq != null)
-                nbPrefixe += eq.prefixe(mot.substring(1));
-            if (sup != null)
-                nbPrefixe += sup.prefixe(mot);
+            if (premier == valeur) {
+                if (eq != null)
+                    return eq.prefixe(mot.substring(1));
+            } else if (premier < valeur) {
+                if (inf != null)
+                    return inf.prefixe(mot);
+            } else if (premier > valeur)
+                if (sup != null)
+                    return sup.prefixe(mot);
         }
-        return nbPrefixe;
+        return 0;
     }
 
     @Override
     public boolean supprimer(String mot) {
         if (mot.isEmpty() || this.estVide())
             return false;
+        char p = mot.charAt(0);
         if (mot.length() == 1) {
-            if (mot.charAt(0) == this.valeur && this.position != 0) {
+            if (p == this.valeur && this.position != 0) {
                 this.position = 0;
                 if (isLeaf()) {
                     this.couperLesBranchesInutiles();
@@ -331,7 +333,7 @@ public class Hybride implements Trie, Cloneable, Serializable {
             Hybride[] fils = {inf, sup};
             for (Hybride h : fils) {
                 if (h != null)
-                    if (mot.charAt(0) == h.valeur && h.position != 0) {
+                    if (p == h.valeur && h.position != 0) {
                         h.position = 0;
                         if (isLeaf()) {
                             this.couperLesBranchesInutiles();
@@ -339,9 +341,17 @@ public class Hybride implements Trie, Cloneable, Serializable {
                         return true;
                     }
             }
+            for (Hybride h : fils) {
+                if (h != null) {
+                    if (p < valeur)
+                        return inf.supprimer(mot);
+                    if (p > valeur) {
+                        return sup.supprimer(mot);
+                    }
+                }
+            }
             return false;
         } else {
-            char p = mot.charAt(0);
             if (p == valeur) {
                 return eq != null && eq.supprimer(mot.substring(1));
             }
@@ -667,7 +677,7 @@ public class Hybride implements Trie, Cloneable, Serializable {
         this.initialisation(h2);
     }
 
-    private boolean isEquilibre() {
+    boolean isEquilibre() {
         int hauteur_inf = (this.inf == null) ? 0 : this.inf.hauteur();
         int hauteur_sup = (this.sup == null) ? 0 : this.sup.hauteur();
         if (Math.abs(hauteur_inf - hauteur_sup) <= 2)

@@ -20,13 +20,13 @@ public class BenchmarkLauncher {
                 .include(className)
                 .measurementIterations(nbIteration)
                 .warmupIterations(nbIteration)
-                .measurementTime(TimeValue.milliseconds(100))
-                .warmupTime(TimeValue.milliseconds(100))
+                .measurementTime(TimeValue.milliseconds(50))
+                .warmupTime(TimeValue.milliseconds(50))
                 .timeUnit(TimeUnit.NANOSECONDS)
                 .mode(Mode.AverageTime)
                 .forks(1)
                 .resultFormat(ResultFormatType.CSV)
-                .result("benchmark output/"+csvName+"supprimer_un_mot.csv")
+                .result("benchmark output/"+csvName+"_ajouter_un_mot.csv")
                 .build();
         try {
             new Runner(optP).run();
@@ -49,7 +49,7 @@ public class BenchmarkLauncher {
         }
     }
     public static void main(String[] args) {
-        runSingleShotTimeBenchmark(HybrideBenchmark.class.getName(),HybrideBenchmark.class.getSimpleName(),10);
-        runSingleShotTimeBenchmark(PatriciaBenchmark.class.getName(),PatriciaBenchmark.class.getSimpleName(),10);
+        runSingleShotTimeBenchmark(HybrideBenchmark.class.getName(),HybrideBenchmark.class.getSimpleName(),30);
+        runSingleShotTimeBenchmark(PatriciaBenchmark.class.getName(),PatriciaBenchmark.class.getSimpleName(),30);
     }
 }

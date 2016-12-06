@@ -31,11 +31,11 @@ public class PatriciaBenchmark {
         for (String s : wc.motsASupprimer)
             wc.patricia.supprimer(s);
     }
-    @Benchmark
     public void benchmark_supprimer_un_mot(AllWordsBenchmarkContainer wc) {
         wc.patricia.supprimer(wc.motASupprimer);
     }
 
+    @Benchmark
     public void benchmark_ajouter_unmotQuiNExistePasEnAnglais(AllWordsBenchmarkContainer wc) {
         wc.patricia.ajouter(wc.motQuiNExistePasEnAnglais);
     }
